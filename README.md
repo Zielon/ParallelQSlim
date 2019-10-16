@@ -1,6 +1,7 @@
 # QSlim
 Parallel mesh simplification algorithm
 
+```
 Usage:
      nv_simplify_mesh --in <fine_mesh> --out <simplified_mesh> [options]
 
@@ -31,3 +32,4 @@ Allowed options:
                                     2 = [geometry, color, normal]
   -a [ --aggressiveness ] arg (=3) Aggressiveness (directly relates to the 
                                    maximum permissive error) [1.0-10.0]
+```
