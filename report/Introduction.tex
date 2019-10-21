@@ -1,8 +1,6 @@
-\chapter{Einleitung}
+\chapter{Introduction}
 \pagenumbering{arabic}%Ab hier, werden arabische Zahlen benutzt
 \setcounter{page}{1}%Mit Abschnitt 1 beginnt die Seitennummerierung neu.
 \thispagestyle{empty}
 
-Die Einleitung soll zum eigentlichen Themengebiet hinführen und die
-Motivation für die Arbeit liefern. Am Schluß der Einleitung wird
-weiterhin noch eine Übersicht über die restliche Arbeit gegeben.
+Mesh simplification is necessary when one wants to reduce size of a mesh still preserving geometry. This project elaborates a specific case of mesh simplification where the focus is mostly on planar surfaces like walls and floors at the same time keeping high level of details for complex shapes; plants, elements on desks in an office, etc. Indoor mesh reconstruction introduces a problem of using the same level of details for the whole 3D space. Meaning, it uses the same resolution/number of faces for every voxel which is not necessary from the geometry preserving point of view. Most of planar surfaces can be described with reduced amount of trinagles. To alleviate this problem the adaptive thresholding was intorduced for quadratic error of each face.
