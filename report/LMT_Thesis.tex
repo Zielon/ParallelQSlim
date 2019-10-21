@@ -1,0 +1,106 @@
+\documentclass[12pt,a4paper]{report}
+
+%------------------------------------------------------------------------
+% PACKAGES:
+
+\usepackage{lmtstyle}
+% Define typearea
+% a) Use automatic:
+\usepackage[BCOR1cm]{typearea}
+% b) Or use fixed:
+%\usepackage{geometry}
+%\geometry{left=1.5cm,textwidth=18.5cm,top=1.5cm,textheight=26.5cm}
+\usepackage[american,ngerman]{babel}
+% Use list of tabels, etc. in table of contents:
+\usepackage{tocbibind}
+% German paragraph skip
+\usepackage{parskip}
+% Encoder:????
+\usepackage[latin1]{inputenc}
+%\usepackage[applemac]{inputenc}
+% Use A4-paper efficiently:
+\usepackage{a4wide}
+% Index-generation
+\usepackage{makeidx}
+% Einbinden von URLs:
+\usepackage{url}
+% Include .eps-files (needed also for the TUM-logo):
+%\usepackage{epsf}
+% Special \LaTex symbols (e.g. \BibTeX):
+\usepackage{doc}
+% Include Graphic-files:
+%\usepackage{graphics}
+% Include Graphic-files:
+\usepackage{graphicx}
+% Include doc++ generated tex-files:
+%\usepackage{docxx}
+% Include PDF links
+%\usepackage[pdftex, bookmarks=true]{hyperref}
+%------------------------------------------------------------------------
+
+\graphicspath{{figures/}}
+
+%########################################################################
+% CHOOSE DEFAULT LANGUAGE:
+\setlang{de}
+%\setlang{en}
+
+% FILL IN ACCORDINGLY:
+\title{Titel der Arbeit}
+\type{M} % / M:Master /B:Bachelor / F:Forschungspraxis / I:Ingenieurspraxis
+\author{Vorname Name}
+\matrikelnr{1234567890}
+\street{Straße Hausnummer}
+\town{PLZ Ort}
+\advisor{Name des Betreuers}
+\datebegin{Datum des Arbeitsbeginns}
+\dateend{Datum des Vortrags}
+%########################################################################
+
+
+\begin{document}%****************************************************
+
+\makemtgtitle
+
+% MAIN PART:
+\pagenumbering{roman}
+% German abstract:
+\include{Kurzfassung}
+% English abstract:
+\include{Abstract}
+% Table of contents:
+\tableofcontents 
+
+% Introduction (Einleitung):
+\include{Introduction}
+
+% Text Body (Hauptteil)
+% Could have multiple chaper-files, e.g.:
+\include{Body}
+%\include{StateOfTheArt}
+%\include{Problem}
+%\include{HowTo}
+%\include{Results}
+%  Conclusions (Zusammenfassung):
+\include{Conclusions}
+% Appendix (Anhänge), could have multiple chaper-files:
+\appendix
+\include{Appendix}
+% List of figures (Abbildungsverzeichnis):
+\listoffigures
+% List of tables (Tabellenverzeichnis):
+\listoftables
+% Glossary (Glossar):
+%\include{Glossary}
+% List of formulae (Liste der Formelzeichen):
+%\include{Formulae}
+% Abbreviations (Abkürzungsverzeichnis):
+%\include{Abbreviations}
+
+% References (Literaturverzeichnis):
+% a) Style (with numbers: use unsrt):
+\bibliographystyle{alpha}
+% b) The File:
+\bibliography{Bibliography}
+
+\end{document} %*****************************************************

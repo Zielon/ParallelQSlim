@@ -32,3 +32,8 @@
 *.app
 
 .idea/
+*.aux
+*.pdf
+*.lof
+*.lot
+*.log	

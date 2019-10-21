@@ -1,0 +1,63 @@
+\chapter{Ein Kapitel des Hauptteils}
+\thispagestyle{empty}% no page number in chapter title page
+\section{Inhalte}
+Im Hauptteil werden aufbauend auf einer State-of-the-art-Diskussion
+(Literaturrecherche) die Ergebnisse der Arbeit im Detail vorgestellt.
+Dabei sollen auch die Schritte des durchgeführten Arbeitsprozesses
+darstellt werden.  Dazu kann der Hauptteil in mehrere Kapitel
+unterteilt werden.
+
+Einleitung und Hauptteil sollen eine in sich geschlossene Abhandlung
+darstellen. Der Leser der Arbeit soll ohne zusätzliche Literatur in
+der Lage sein, die Arbeit im Zusammenhang zu verstehen.
+
+\section{Beispiel für eine Abbildung}
+\begin{figure}[h!]
+  \begin{center}
+        \includegraphics[width=4cm]{TUMLogo_oZ_Outline_schwarz_CMYK}
+    \caption{Beispiel für eine Beschriftung.}
+    \label{fig:ToUseWithReference}
+  \end{center}
+\end{figure}
+
+Durch die \texttt{\bslash label} kann auf die Bilder mit
+\texttt{\bslash ref} verwiesen werden
+(z.B.~Abbildung~\ref{fig:ToUseWithReference}).
+
+\section{Beispiele für Referenzen}
+Die Literaturhinweise werden im Text z.B.\ folgendermaßen verwendet:\\
+``..., wie in \cite{eberspaecher97} gezeigt, ...'' oder ``... es gibt
+mehrere Ansätze \cite{arnaud99,griswold90} ...''
+
+\section{Schrifttypen}
+Als Schrifttyp wird Arial oder Roman empfohlen. Bitte beachten, daß
+Größen und Einheiten eine eigene Schreibweise haben:
+\begin{description}
+\item[Kursivschrift:] physikalische Größen (z.B.~$U$ für Spannung),
+  Variablen~(z.B.~$x$), sowie Funktions- und Operatorzeichen, deren
+  Bedeutung frei gewählt werden kann (z.B.~$f(x)$)
+\item[Steilschrift:] Einheiten und ihre Vorsätze (z.B.~kg, pF),
+  Zahlen, Funktions- und Operatorzeichen mit feststehender Bedeutung
+  (z.B.~sin, lg)
+\end{description} 
+
+\clearpage
+
+\section{Archivierung}
+Für die Archivierung sind alle Dateien der Arbeit (auch der Vorträge)
+dem Betreuer zur Verfügung zu stellen.  Weiterhin soll noch ein
+\BibTeX-Eintrag der Arbeit erstellt werden (die Felder in eckigen
+Klammern sind dabei auszufüllen):
+\begin{verbatim}
+@MastersThesis{<Nachname des Autors><Jahr>,
+  type =         {<Art der Arbeit>},
+  title =        {{<Thema der Arbeit>}},
+  school =       {Institute of Communication Networks~(LKN),
+                  Munich University of Technology~(TUM)},
+  author =       {<Nachname des Autors>, <Vorname des Autors>},
+  annote =       {<Nachname des Betreuers>, <Vorname des Betreuers>},
+  month =        {<Monat>},
+  year =         {<Jahr>},
+  key =          {<Mehrere Suchschlüssel>}
+}
+\end{verbatim}

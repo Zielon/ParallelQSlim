@@ -1,0 +1,168 @@
+\usepackage{ifthen}
+\ifthenelse{\isundefined{\includegraphics}} {\usepackage{graphicx}} {}
+% SOME SETTINGS:
+
+% Pagestyle:
+\pagestyle{headings}
+
+% Avoid 'overhang':
+\sloppy
+
+% Choose default language (de - en)
+\newcommand{\setlang}[1]{
+	\newcommand{\lang}{#1}
+}
+
+% Allows switching languages within the document
+\newcommand{\switchlanguage}[1]{
+	\ifthenelse{\equal{#1}{de}} {\selectlanguage{ngerman}} {\selectlanguage{american}}
+	
+	\nonfrenchspacing
+}
+
+\renewcommand{\title}[1]{ \newcommand{\inserttitle}{#1} }
+\newcommand{\type}[1]{ \newcommand{\inserttype}{\ifthenelse{\equal{\lang}{de}}
+																										{
+																											\ifthenelse{\equal{#1}{M}}{Master-Arbeit}
+																											{
+																												\ifthenelse{\equal{#1}{B}}{Bachelor-Arbeit}
+																												{
+																													\ifthenelse{\equal{#1}{D}}{Diplomarbeit}
+																													{
+																														\ifthenelse{\equal{#1}{S}}{Studienarbeit}{#1}
+																													}
+																												}
+																											}
+																											
+																										}
+																										% engl.
+																										{
+																											\ifthenelse{\equal{#1}{M}}{Master Thesis}
+																											{
+																												\ifthenelse{\equal{#1}{B}}{Bachelor Thesis}
+																												{
+																													\ifthenelse{\equal{#1}{D}}{Diplomarbeit}
+																													{
+																														\ifthenelse{\equal{#1}{S}}{Studienarbeit}{#1}
+																													}
+																												}
+																											}
+																											
+																										}} }
+\renewcommand{\author}[1]{ \newcommand{\insertauthor}{#1} }
+\newcommand{\matrikelnr}[1]{ \newcommand{\insertmatrikelnr}{#1} }
+%\newcommand{\address}[2]{ \newcommand{\insertaddress}{\parbox[t]{12cm}{#1\\#2}} }
+\newcommand{\street}[1]{ \newcommand{\insertstreet}{#1} }
+\newcommand{\town}[1]{ \newcommand{\inserttown}{#1} }
+\newcommand{\advisor}[1]{ \newcommand{\insertadvisor}{#1} }
+\newcommand{\datebegin}[1]{ \newcommand{\insertdatebegin}{#1} }
+\newcommand{\dateend}[1]{ \newcommand{\insertdateend}{#1} }
+
+
+% TITLE #######################################################################
+\newcommand{\makemtgtitle}
+{
+
+\thispagestyle{empty}
+\newpage
+
+\ifthenelse{\equal{\lang}{de}}{
+% GERMAN TITLEPAGE ------------------
+\vspace{5cm}
+\begin{center}
+    \includegraphics[width=4cm]{TUMLogo_oZ_Outline_schwarz_CMYK}
+\end{center}
+
+\begin{center} {\sf
+                               \Large  Technische Universit\"at M\"unchen
+                                \smallskip 
+
+                               \Large Lehrstuhl f\"ur Medientechnik
+                               \smallskip
+                              }
+
+                              {\sf \large Prof. Dr.-Ing. Eckehard Steinbach} 
+              \end{center}
+
+\vspace{4cm}
+
+\begin{center}
+        {\bf\Huge \inserttype} 
+\end{center}
+
+\begin{center}
+        \vspace{.4cm}
+        {\LARGE 
+        \inserttitle
+        }
+\end{center}
+\vfill         
+{
+\begin{center}
+	\setlength{\baselineskip}{0.2cm}
+	\large\begin{tabular}{ll}
+	Autor: &  \insertauthor\\
+	Matrikelnummer: & \insertmatrikelnr\\
+	Anschrift: & \insertstreet\\
+							& \inserttown \\
+	Betreuer: & \insertadvisor\\
+	Beginn: & \insertdatebegin\\
+	Abgabe: & \insertdateend
+	\end{tabular}
+\end{center}
+}
+% Independence and License statements
+\include{StatementsDE}
+
+}{
+% ENGLISH TITLEPAGE -----------------
+\vspace{5cm}
+\begin{center}
+    \includegraphics[width=4cm]{TUMLogo_oZ_Outline_schwarz_CMYK}
+\end{center}
+
+\begin{center} {\sf 
+                               \Large  Technische Universit\"at M\"unchen
+                                \smallskip
+
+                               \Large Chair of Media Technology
+                               \smallskip
+                              }
+
+                              {\sf \large Prof. Dr.-Ing. Eckehard Steinbach} 
+              \end{center}
+
+\vspace{4cm}
+
+\begin{center}
+        {\bf\Huge \inserttype} 
+\end{center}
+
+\begin{center}
+        \vspace{.4cm}
+        {\LARGE 
+        \inserttitle
+        }
+\end{center}
+\vfill         
+{
+\begin{center}
+	\setlength{\baselineskip}{0.2cm}
+	\large\begin{tabular}{ll}
+	Author: &  \insertauthor\\
+	Matriculation Number: & \insertmatrikelnr\\
+	Address: & \insertstreet\\
+					 & \inserttown\\
+	Advisor: & \insertadvisor\\
+	Begin: & \insertdatebegin\\
+	End: & \insertdateend
+	\end{tabular}
+\end{center}
+}
+% Independence and License statements
+\include{StatementsEN}
+
+}
+
+}
+%##############################################################################
