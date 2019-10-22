@@ -1,0 +1,18 @@
+\begin{thebibliography}{CLRS01}
+
+\bibitem[CLRS01]{cormen01}
+Thomas~H. Cormen, Charles~E. Leiserson, Ronald~L. Rivest, and Clifford Stein.
+\newblock {\em Introduction to Algorithms}.
+\newblock The MIT Press, 2001.
+
+\bibitem[Gar99]{garland99}
+Michael Garland.
+\newblock {\em Quadric-Based Polygonal Surface Simplification}.
+\newblock School of Computer Science Carnegie Mellon University, 1999.
+
+\bibitem[GH97]{garland97}
+Michael Garland and Paul~S. Heckbert.
+\newblock {\em Surface Simplification Using Quadric Error Metrics}.
+\newblock ACM Press/Addison-Wesley Publishing Co., 1997.
+
+\end{thebibliography}
