@@ -10,44 +10,46 @@ A level-1 auxiliary file: Conclusions.aux
 A level-1 auxiliary file: Appendix.aux
 The style file: alpha.bst
 Database file #1: Bibliography.bib
-You've used 3 entries,
+Warning--empty publisher in eigenLU19
+You've used 4 entries,
             2543 wiz_defined-function locations,
-            580 strings with 4949 characters,
-and the built_in function-call counts, 1030 in all, are:
-= -- 87
-> -- 58
-< -- 1
-+ -- 20
-- -- 20
-* -- 64
-:= -- 191
-add.period$ -- 9
-call.type$ -- 3
-change.case$ -- 16
-chr.to.int$ -- 3
-cite$ -- 3
-duplicate$ -- 46
-empty$ -- 76
-format.name$ -- 24
-if$ -- 201
+            585 strings with 4992 characters,
+and the built_in function-call counts, 1299 in all, are:
+= -- 109
+> -- 66
+< -- 2
++ -- 22
+- -- 22
+* -- 79
+:= -- 235
+add.period$ -- 12
+call.type$ -- 4
+change.case$ -- 20
+chr.to.int$ -- 4
+cite$ -- 5
+duplicate$ -- 62
+empty$ -- 101
+format.name$ -- 28
+if$ -- 255
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 6
-newline$ -- 18
-num.names$ -- 9
-pop$ -- 29
+missing$ -- 8
+newline$ -- 23
+num.names$ -- 12
+pop$ -- 39
 preamble$ -- 1
-purify$ -- 22
+purify$ -- 28
 quote$ -- 0
-skip$ -- 32
+skip$ -- 42
 stack$ -- 0
-substring$ -- 21
-swap$ -- 3
-text.length$ -- 1
-text.prefix$ -- 1
+substring$ -- 28
+swap$ -- 4
+text.length$ -- 2
+text.prefix$ -- 2
 top$ -- 0
-type$ -- 12
-warning$ -- 0
-while$ -- 8
-width$ -- 6
-write$ -- 38
+type$ -- 16
+warning$ -- 1
+while$ -- 10
+width$ -- 7
+write$ -- 49
+(There was 1 warning)

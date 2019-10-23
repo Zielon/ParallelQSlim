@@ -14,7 +14,7 @@ The simplification algorithm is based on several atomic operations. The most imp
 \begin{enumerate}
 \item Move the vertices $v_i$ and $v_j$ to the position $\bar{v}$
 \item Replace all connections of $v_j$ with $v_i$
-\item Remove $v_j$ and all faces which belong both to $v_i$ and $v_j$. In Figure~\ref{fig:edge_contraction_ref} the gray faces.
+\item Remove $\mathbf{v_j}$ and all faces which belong both to $\mathbf{v_i}$ and $\mathbf{v_j}$. In Figure~\ref{fig:edge_contraction_ref} the gray faces.
 \end{enumerate}
 
 \begin{figure}[h!]
@@ -124,10 +124,10 @@ The value of $Q(\mathbf{\bar{v}})$ is a key in the min-heap. Tables~\ref{tab:app
 \end{tabular}
 \caption{Percentage of simplification of the original Stanford Bunny with 69351 faces.}
 \end{table}
-As you can see, even with 94.756\% of simplification the geometry still fairly preserved.
+Table~\ref{tab:original_ref} shows the quality of progressive simplification. As you can see, 70\% of reduction is hard to distinguish from the original mesh, even the 94\% is still a good approximation and features of the bunny are preserved fairly well.
 
 \begin{center}
-  	\begin{table}[ht]
+  	\begin{table}[H]
   	\begin{center}
   	\begin{tabular}{cc}
 	\begin{subfigure}{0.7\textwidth}\centering\includegraphics
@@ -144,7 +144,7 @@ As you can see, even with 94.756\% of simplification the geometry still fairly p
 \end{center}
 
 \begin{center}
-  	\begin{table}[ht]
+  	\begin{table}[H]
   	\begin{center}
   	\begin{tabular}{cc}
 	\begin{subfigure}{0.4\textwidth}\centering\includegraphics
@@ -168,7 +168,7 @@ As you can see, even with 94.756\% of simplification the geometry still fairly p
 \end{center}
 
 \begin{center}
-  	\begin{table}[ht]
+  	\begin{table}[H]
   	\begin{center}
   	\begin{tabular}{cc}
 	\begin{subfigure}{0.4\textwidth}\centering\includegraphics
@@ -192,6 +192,36 @@ As you can see, even with 94.756\% of simplification the geometry still fairly p
 	\end{table}
 \end{center}
 
+\section{Vertex Placement}
+
+To perform the contraction of an edge $(\mathbf{v_i}, \mathbf{v_j})\rightarrow\bar{\mathbf{v}}$ we have to calcualte a new position of $\mathbf{\bar{v}}$ which is called the target. The optimal placement strategy, therefore, is to find a point for which $Q(\mathbf{\bar{v}})$ is minimal. Fortunately, since, $Q(\mathbf{\bar{v}})$ is quadratic we are guaranteed to find an unique minimizer which is a global minimum.
+\begin{align}
+Q(\mathbf{v}) &= \mathbf{v}^T\mathbf{A}\mathbf{v} + 2\mathbf{b}^T\mathbf{v} + c\\
+\nabla Q(\mathbf{v}) &= 2\mathbf{A}\mathbf{v} + 2 \mathbf{b}
+\end{align}
+Solving for $\nabla Q(\mathbf{v}) = 0$, the optimal position is defined:
+\begin{align}
+\mathbf{\bar{v}} = -\mathbf{A}^{-1}\mathbf{b}
+\end{align}
+and the error:
+\begin{align}
+Q(\mathbf{\bar{v}}) = \mathbf{b}^T\mathbf{\bar{v}} + c = -\mathbf{b}^T\mathbf{A}^{-1}\mathbf{b} + c
+\end{align}
+
+The function used to calculate the optimal position $\mathbf{\bar{v}}$ is the following:
+\begin{center}
+\begin{lstlisting}[caption={LU decomposition for solving a linear system.},captionpos=b]
+virtual bool optimize(Eigen::VectorXd &result) {
+	Eigen::FullPivLU<Eigen::MatrixXd> lu = A.fullPivLu();
+	if (!lu.isInvertible())
+		return false;
+	result = -lu.solve(b);
+	return true;
+};
+\end{lstlisting}
+
+\end{center}
+Eigen::FullPivLU is LU decomposition of a matrix with complete pivoting, and related features. This decomposition provides the generic approach to solving systems of linear equations, computing the rank, invertibility, inverse, kernel, and determinant \cite{eigenLU19}.
 \chapter{Extended simplification algorithm}
 \thispagestyle{empty}% no page number in chapter title page
 \section{Design}
