@@ -10,30 +10,29 @@ A level-1 auxiliary file: Conclusions.aux
 A level-1 auxiliary file: Appendix.aux
 The style file: alpha.bst
 Database file #1: Bibliography.bib
-Warning--empty publisher in eigenLU19
 You've used 4 entries,
             2543 wiz_defined-function locations,
-            585 strings with 4992 characters,
-and the built_in function-call counts, 1299 in all, are:
-= -- 109
+            586 strings with 5072 characters,
+and the built_in function-call counts, 1296 in all, are:
+= -- 113
 > -- 66
 < -- 2
 + -- 22
 - -- 22
-* -- 79
-:= -- 235
+* -- 75
+:= -- 233
 add.period$ -- 12
 call.type$ -- 4
 change.case$ -- 20
 chr.to.int$ -- 4
-cite$ -- 5
-duplicate$ -- 62
+cite$ -- 4
+duplicate$ -- 57
 empty$ -- 101
 format.name$ -- 28
-if$ -- 255
+if$ -- 258
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 8
+missing$ -- 6
 newline$ -- 23
 num.names$ -- 12
 pop$ -- 39
@@ -47,9 +46,8 @@ swap$ -- 4
 text.length$ -- 2
 text.prefix$ -- 2
 top$ -- 0
-type$ -- 16
-warning$ -- 1
+type$ -- 20
+warning$ -- 0
 while$ -- 10
 width$ -- 7
-write$ -- 49
-(There was 1 warning)
+write$ -- 50

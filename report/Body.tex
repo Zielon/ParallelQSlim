@@ -12,8 +12,8 @@ The goal of this work was to adopt this algorithm to a parallel framework capabl
 The simplification algorithm is based on several atomic operations. The most important of them is an edge contraction. Let me denote an edge as a pair of vertices $(\mathbf{v_i}, \mathbf{v_j})\rightarrow\bar{\mathbf{v}}$. The atomic opartion of a contraction is then defined as:
 
 \begin{enumerate}
-\item Move the vertices $v_i$ and $v_j$ to the position $\bar{v}$
-\item Replace all connections of $v_j$ with $v_i$
+\item Move the vertices $\mathbf{v_i}$ and $\mathbf{v_j}$ to the position $\bar{\mathbf{v}}$
+\item Replace all connections of $\mathbf{v_j}$ with $\mathbf{v_i}$
 \item Remove $\mathbf{v_j}$ and all faces which belong both to $\mathbf{v_i}$ and $\mathbf{v_j}$. In Figure~\ref{fig:edge_contraction_ref} the gray faces.
 \end{enumerate}
 
@@ -133,9 +133,9 @@ Table~\ref{tab:original_ref} shows the quality of progressive simplification. As
 	\begin{subfigure}{0.7\textwidth}\centering\includegraphics
 		[width=0.5\columnwidth]{original_100}\caption{Faces 69451 (100\%)}\label{original_100_ref}\end{subfigure}\\
 	\begin{subfigure}{0.7\textwidth}\centering\includegraphics
-		[width=0.5\columnwidth]{original_70}\caption{Faces 18892 (70\%)}\label{original_70_ref}\end{subfigure}\\
+		[width=0.5\columnwidth]{original_70}\caption{Faces 18892 (30\%)}\label{original_70_ref}\end{subfigure}\\
 	\begin{subfigure}{0.7\textwidth}\centering\includegraphics
-		[width=0.5\columnwidth]{original_95}\caption{Faces 3642 (94\%)}\label{original_95_ref}\end{subfigure}\\
+		[width=0.5\columnwidth]{original_95}\caption{Faces 3642 (6\%)}\label{original_95_ref}\end{subfigure}\\
 	\end{tabular}
 	\caption{Quality of original mesh simplification.}
   	\label{tab:original_ref}
@@ -219,9 +219,15 @@ virtual bool optimize(Eigen::VectorXd &result) {
 	return true;
 };
 \end{lstlisting}
-
 \end{center}
 Eigen::FullPivLU is LU decomposition of a matrix with complete pivoting, and related features. This decomposition provides the generic approach to solving systems of linear equations, computing the rank, invertibility, inverse, kernel, and determinant \cite{eigenLU19}.
+
+In the case when a matrix is not invertible the following computations are performed \cite{garland99}:
+\begin{enumerate}
+\item If $\mathbf{A}$ is singular, find the optimal position along the line segment $(\mathbf{v_i}, \mathbf{v_j})$.
+\item If this is not unique, select the better of $\mathbf{v_i}$ and $ \mathbf{v_j}$.
+\end{enumerate}
+
 \chapter{Extended simplification algorithm}
 \thispagestyle{empty}% no page number in chapter title page
 \section{Design}

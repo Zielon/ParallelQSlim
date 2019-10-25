@@ -7,8 +7,9 @@ Thomas~H. Cormen, Charles~E. Leiserson, Ronald~L. Rivest, and Clifford Stein.
 
 \bibitem[Eig19]{eigenLU19}
 Eigen.
-\newblock {\em Eigen::FullPivLU}.
-\newblock 2019.
+\newblock \url{https://eigen.tuxfamily.org/dox classEigen_1_1FullPivLU.html},
+  2019.
+\newblock [Online; accessed 23-Oct-2019].
 
 \bibitem[Gar99]{garland99}
 Michael Garland.
