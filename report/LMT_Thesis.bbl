@@ -21,4 +21,9 @@ Michael Garland and Paul~S. Heckbert.
 \newblock {\em Surface Simplification Using Quadric Error Metrics}.
 \newblock ACM Press/Addison-Wesley Publishing Co., 1997.
 
+\bibitem[Str88]{strang88}
+Gilbert Strang.
+\newblock {\em Linear Algebra and its Applications}.
+\newblock Harcourt Brace Jovanovich, San Diego, Third edition, 1988.
+
 \end{thebibliography}

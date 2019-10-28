@@ -10,44 +10,44 @@ A level-1 auxiliary file: Conclusions.aux
 A level-1 auxiliary file: Appendix.aux
 The style file: alpha.bst
 Database file #1: Bibliography.bib
-You've used 4 entries,
+You've used 5 entries,
             2543 wiz_defined-function locations,
-            586 strings with 5072 characters,
-and the built_in function-call counts, 1296 in all, are:
-= -- 113
-> -- 66
-< -- 2
-+ -- 22
-- -- 22
-* -- 75
-:= -- 233
-add.period$ -- 12
-call.type$ -- 4
-change.case$ -- 20
-chr.to.int$ -- 4
-cite$ -- 4
-duplicate$ -- 57
-empty$ -- 101
-format.name$ -- 28
-if$ -- 258
+            591 strings with 5185 characters,
+and the built_in function-call counts, 1566 in all, are:
+= -- 136
+> -- 74
+< -- 3
++ -- 24
+- -- 24
+* -- 88
+:= -- 280
+add.period$ -- 15
+call.type$ -- 5
+change.case$ -- 24
+chr.to.int$ -- 5
+cite$ -- 5
+duplicate$ -- 73
+empty$ -- 126
+format.name$ -- 32
+if$ -- 313
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 6
-newline$ -- 23
-num.names$ -- 12
-pop$ -- 39
+missing$ -- 8
+newline$ -- 28
+num.names$ -- 15
+pop$ -- 48
 preamble$ -- 1
-purify$ -- 28
+purify$ -- 34
 quote$ -- 0
-skip$ -- 42
+skip$ -- 51
 stack$ -- 0
-substring$ -- 28
-swap$ -- 4
-text.length$ -- 2
-text.prefix$ -- 2
+substring$ -- 35
+swap$ -- 5
+text.length$ -- 3
+text.prefix$ -- 3
 top$ -- 0
-type$ -- 20
+type$ -- 24
 warning$ -- 0
-while$ -- 10
-width$ -- 7
-write$ -- 50
+while$ -- 12
+width$ -- 9
+write$ -- 62

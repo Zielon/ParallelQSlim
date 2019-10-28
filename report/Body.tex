@@ -137,7 +137,7 @@ Table~\ref{tab:original_ref} shows the quality of progressive simplification. As
 	\begin{subfigure}{0.7\textwidth}\centering\includegraphics
 		[width=0.5\columnwidth]{original_95}\caption{Faces 3642 (6\%)}\label{original_95_ref}\end{subfigure}\\
 	\end{tabular}
-	\caption{Quality of original mesh simplification.}
+	\caption{Quality of the simplification of the original mesh.}
   	\label{tab:original_ref}
   	\end{center}
 	\end{table}
@@ -227,7 +227,130 @@ In the case when a matrix is not invertible the following computations are perfo
 \item If $\mathbf{A}$ is singular, find the optimal position along the line segment $(\mathbf{v_i}, \mathbf{v_j})$.
 \item If this is not unique, select the better of $\mathbf{v_i}$ and $ \mathbf{v_j}$.
 \end{enumerate}
+In practice it is very rare that a matrix determinant is zero. Due to the limits of floating point precision. The optimal vertex placement will tend to create closely fitting approximations of the original mesh. Which at the end gives a better shaped triangles \cite{garland99}. The placement strategy for the pair of contraction $(\mathbf{v_i}, \mathbf{v_j})$ is to always move $\mathbf{v_j}$ to the position of $\mathbf{v_i}$. It eliminates a problem of storing delta of the new vertex position.
 
-\chapter{Extended simplification algorithm}
-\thispagestyle{empty}% no page number in chapter title page
+\section{Summary of Garland's Algorithm}
+
+Below I present the complete algorithm in 5 steps. In the next chapter I will elaborate how this concept is incorporated in multithreded approach.
+
+Algorithm \cite{garland99}:
+
+\begin{enumerate}
+\item Select a set of candidate vertex pairs $(\mathbf{v_i}, \mathbf{v_j})$.
+\item Allocate a quadric $Q_i$ for each vertex $\mathbf{v_i}$.
+\item For each face compute a quadric $Q_i$. Add this fundamental quadric to the vertex quadrics $Q_i, Q_k, Q_l$ and optionaly weight it appropriately.
+\item For each candidate pair $(\mathbf{v_i}, \mathbf{v_j})$:
+\begin{enumerate}
+\item Compute $Q = Q_i + Q_j$.
+\item Select a target position $\mathbf{\bar{v}}$.
+\item Apply consistency checks and penalties.
+\item Place pair in heap keys on cost $Q(\mathbf{\bar{v}})$
+\end{enumerate}
+\item Repeat unitl the desired approximation is reached:
+\begin{enumerate}
+\item Remove the pair $(\mathbf{v_i}, \mathbf{v_j})$ of least cost from the heap.
+\item Preform contraction $(\mathbf{v_i}, \mathbf{v_j})\rightarrow\bar{\mathbf{v}}$
+\item Set $Q_i = Q_i + Q_j$.
+\item For each remaining pair $(\mathbf{v_i}, \mathbf{v_j})$, compute target position and cost as in step 4; update heap.
+\end{enumerate}
+\end{enumerate}
+
+In the next chapter I would like to give a brief introduction to extended version of the algoritm which includes color and normals.
+
+\chapter{Extended Simplification Algorithm}
+
+The previous implementation includes only geometric error. In this chapter we incorporate more attributes to improve simplification. Using additionally, color and normals we can easier deceminate planar surfaces and achieve better results. However, in the noisy environment of color (which is usually the case in scans), gradient guided simplification may produce poor results.
+
 \section{Design}
+In this section we assume that each vertex is additionally associated with color $\mathbf{c} = [r \ g \ b]^T$ and $\mathbf{n} = [nx \ ny \ nz]^T$. For the sake of simplicity, lets consider an example with geometry and color only. Assume that each vertex is attributed with $\mathbf{v} = [x \ y \ z \ r \ g \ b]^T$. Figure~\ref{fig:hexagon} shows an example of such a mesh. A triangle is defined as $T = (\mathbf{p}, \mathbf{q}, \mathbf{r})$ with edges $\mathbf{h} = \mathbf{q} - \mathbf{p}$ and $\mathbf{k} = \mathbf{r} - \mathbf{p}$. Now, because our problem is more that 3 dimensional, we have to use a different method to calucalte orthogonal vectors to the plane defined by the face. Fortunately, Gram-Schmidt orthogonalization \cite{strang88} helps us to solve this problem.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=15cm]{hexagon}
+    \caption{A triangulated hexagon with color values at each vertex \cite{garland99}.}
+    \label{fig:hexagon}
+  \end{center}
+\end{figure}
+
+We have to find 2 vectors $\mathbf{e_1}, \mathbf{e_2}$ which are orthogonal to each other.
+
+\begin{align}
+\mathbf{e_1} &= \mathbf{h} / \norm{\mathbf{e_1}} \\
+\mathbf{e_2} &= \frac{\mathbf{k} - (\mathbf{e_1} \cdot \mathbf{k})\mathbf{e_1}}{\norm{\mathbf{k} - (\mathbf{e_1} \cdot \mathbf{k})\mathbf{e_1}}}
+\end{align}
+
+Those equations give us 2 unit-length vectors which form a local coordinate system with $\mathbf{p}$ as the origin.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=12cm]{gram}
+    \caption{Orthonomal vectors \cite{garland99}.}
+    \label{fig:gram}
+  \end{center}
+\end{figure}
+
+Let me define a distance from an arbitrary point $\mathbf{v}\in\mathbf{R}^n$ to the plane create by the face $T$. The quared distance of the vector $\mathbf{u} = \mathbf{p} - \mathbf{v}$ is defined as \cite{garland99}
+
+\begin{align}
+\norm{\mathbf{u}}^2 = \mathbf{u}^T\mathbf{u} = (\mathbf{u}^T\mathbf{e_1})^2 + ... +  (\mathbf{u}^T\mathbf{e_n})^2
+\end{align}
+
+We can rearrange this equation to
+
+\begin{align}
+(\mathbf{u}^T\mathbf{e_3})^2 + ... +  (\mathbf{u}^T\mathbf{e_n})^2 = \norm{\mathbf{u}}^2 - (\mathbf{u}^T\mathbf{e_1})^2 - (\mathbf{u}^T\mathbf{e_2})^2
+\end{align}
+
+The left hand side is the squared distance of $\mathbf{u}$ along all the axes perpendicular to the plane of $T$. This is a distance between this vector $\mathbf{v}$ and the plane $T$.
+
+\begin{align}
+D^2 = \mathbf{u}^T\mathbf{u} - (\mathbf{u}^T\mathbf{e_1})(\mathbf{u}^T\mathbf{e_1}) - (\mathbf{u}^T\mathbf{e_2})(\mathbf{u}^T\mathbf{e_2})
+\end{align}
+
+The quadric metric is defined then as $Q(\mathbf{v}) = \mathbf{v}^T\mathbf{A}\mathbf{v} + 2\mathbf{b}^T\mathbf{v} + c$ where
+
+\begin{align}
+\mathbf{A} &= \mathbf{I} - \mathbf{e_1}\mathbf{e_1}^T - \mathbf{e_2}\mathbf{e_2}^T\\
+\mathbf{b} &= (\mathbf{p} \cdot \mathbf{e_1})\mathbf{e_1} + (\mathbf{p} \cdot \mathbf{e_2})\mathbf{e_2} - \mathbf{p}\\ 
+\mathbf{c} &= \mathbf{p} \cdot \mathbf{p} - (\mathbf{p} \cdot \mathbf{e_1})^2 - (\mathbf{p} \cdot \mathbf{e_2})^2 
+\end{align}
+
+The matrix A from \ref{fig:hexagon} is then
+
+\begin{align}
+\left[
+\begin{array}{rrrrrr}
+0.06 & 0 & 0 & 0 & -0.59 & 0\\
+0 & 0.23 & 0 & 1.15 & 0 & 0\\
+0 & 0 & 6.00 & 0 & 0 & 0\\
+0 & 1.15 & 0 & 5.77 & 0 & 0\\
+-0.59 & 0 & 0 & 0 & 5.94 & 0\\
+0 & 0 & 0 & 0 & 0 & 6.00
+\end{array}\right]
+\end{align}
+
+Building the quadric and finding the optimal position is exactly the same like in the geometry only case. To use different metric we have to only change computations of orthagonal vectors. In Table\ref{tab:color_simplification} we can see the results of using color and geometry metric error. We can easily notice that the simplifcation follows the color pattern. In some cases its a desired features, however, we have to be carefule about the noise of the gradient.
+
+\begin{center}
+  	\begin{table}[H]
+  	\begin{center}
+  	\begin{tabular}{cc}
+	\begin{subfigure}{0.5\textwidth}\centering\includegraphics
+		[width=1\columnwidth]{color_1}\caption{Original}\label{color1}\end{subfigure}&	
+	\begin{subfigure}{0.5\textwidth}\centering\includegraphics
+		[width=1\columnwidth]{color_2}\caption{Color and geometry simplification}\label{color2}\end{subfigure}\\
+		\newline
+			\begin{subfigure}{0.5\textwidth}\centering\includegraphics
+		[width=1\columnwidth]{color_4}\caption{Original}\label{color1}\end{subfigure}&	
+	\begin{subfigure}{0.5\textwidth}\centering\includegraphics
+		[width=1\columnwidth]{color_3}\caption{Color and geometry simplification}\label{color2}\end{subfigure}
+		\end{tabular}
+  	\caption{Comparison of gradient guided simplification.} \label{tab:color_simplification}
+  	\end{center}
+	\end{table}
+\end{center}
+
+
+\chapter{Parallel Implementation of the Algorithm}
+
+
