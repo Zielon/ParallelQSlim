@@ -477,7 +477,22 @@ The Figure \ref{fig:speedup} desciribes the best speedup for each iteration from
 \newpage
 \section{Taubin Smoothing}
 
-During my research and later implementation of the algorithm I noticed faster convergance to selected level of reduction if a mesh smoothing is used. For my purposes I used Taubin Smoothing algorithm. The method is a linear low-pass filter that removes high curvature variations and does not produce shrinkage \cite{taubin95}. After the mesh is loaded to the program, I perform the smoothing with:
+During my research and later implementation of the algorithm I noticed faster convergance to selected level of reduction if a mesh smoothing is used. For my purposes I used Taubin Smoothing algorithm. The method is a linear low-pass filter that removes high curvature variations and does not produce shrinkage \cite{taubin95}. After the mesh is loaded to the program, I perform the smoothing.
+
+\begin{center}
+  	\begin{table}[h!]
+  	\begin{center}
+  	\begin{tabular}{cc}
+	\begin{subfigure}{1\textwidth}\centering\includegraphics
+		[width=0.8\columnwidth]{smooth}\caption{Simplification with smoothing}\label{smooth}\end{subfigure}\\
+	\begin{subfigure}{1\textwidth}\centering\includegraphics
+		[width=0.8\columnwidth]{non_smooth}\caption{Simplification without smoothing}\label{non_smooth}\end{subfigure}
+	\end{tabular}
+	\caption{Comparision of the smoothing effect for 85\% simplification.}
+  	\label{tab:smoothing_effect}
+  	\end{center}
+	\end{table}
+\end{center}
 
 \begin{table}[h!]
 \centering
@@ -491,7 +506,19 @@ During my research and later implementation of the algorithm I noticed faster co
 \caption{Taubin algorithm parameters.}
 \end{table}
 
+The simplification was ran on the mesh with 396277 faces and 208825 vertices. After the process the mesh was reduced to 50009 faces and 29347 vertices. In the Table 
 
+\begin{table}[h!]
+\centering
+\begin{tabular}{ |c|c| } 
+ \hline
+ Smoothing time & Without smoothing time\\
+ \hline
+ 27.73 s & 43.06 s\\ 
+ \hline
+\end{tabular}
+\caption{Taubin algorithm parameters.}
+\end{table}
 
 \newpage
 \section{Summary of the Algorithm}
