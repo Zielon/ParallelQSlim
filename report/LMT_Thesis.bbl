@@ -21,6 +21,12 @@ Michael Garland and Paul~S. Heckbert.
 \newblock {\em Surface Simplification Using Quadric Error Metrics}.
 \newblock ACM Press/Addison-Wesley Publishing Co., 1997.
 
+\bibitem[Gra02]{grand02}
+Mark Grand.
+\newblock {\em Patterns in Java, Volume 1, A Catalog of Reusable Design
+  Patterns Illustrated with UML}.
+\newblock Wiley, Second edition, 2002.
+
 \bibitem[Str88]{strang88}
 Gilbert Strang.
 \newblock {\em Linear Algebra and its Applications}.
@@ -30,5 +36,11 @@ Gilbert Strang.
 C.~C Jay~Kuo Sheng~Yang, Chang-Su~Kim.
 \newblock {\em View-dependent progressive mesh coding for graphic streaming}.
 \newblock Multimedia Systems and Applications IV, 2001.
+
+\bibitem[WE19]{boost03}
+Kempf William~E.
+\newblock
+  \url{https://www.boost.org/doc/libs/1_33_1/doc/html/thread_group.html}, 2019.
+\newblock [Online; accessed 29-Oct-2019].
 
 \end{thebibliography}

@@ -192,6 +192,7 @@ Table~\ref{tab:original_ref} shows the quality of progressive simplification. As
 	\end{table}
 \end{center}
 
+\newpage
 \section{Vertex Placement}
 
 To perform the contraction of an edge $(\mathbf{v_i}, \mathbf{v_j})\rightarrow\bar{\mathbf{v}}$ we have to calcualte a new position of $\mathbf{\bar{v}}$ which is called the target. The optimal placement strategy, therefore, is to find a point for which $Q(\mathbf{\bar{v}})$ is minimal. Fortunately, since, $Q(\mathbf{\bar{v}})$ is quadratic we are guaranteed to find an unique minimizer which is a global minimum.
@@ -229,6 +230,7 @@ In the case when a matrix is not invertible the following computations are perfo
 \end{enumerate}
 In practice it is very rare that a matrix determinant is zero. Due to the limits of floating point precision. The optimal vertex placement will tend to create closely fitting approximations of the original mesh. Which at the end gives a better shaped triangles \cite{garland99}. The placement strategy for the pair of contraction $(\mathbf{v_i}, \mathbf{v_j})$ is to always move $\mathbf{v_j}$ to the position of $\mathbf{v_i}$. It eliminates a problem of storing delta of the new vertex position.
 
+\newpage
 \section{Summary of Garland's Algorithm}
 
 Below I present the complete algorithm in 5 steps. In the next chapter I will elaborate how this concept is incorporated in multithreded approach.
@@ -362,7 +364,7 @@ In this chapter, I will describe my approach to design a parallel version of Gar
 
 \section{Producer Consumer Pattern}
 
-The producer-consumer pattern is a perfect way to separate workload of processing data from the work to produce them. In other words, we divide our problem into two major components connected usually by a queue. This is a classic example of a multi-process synchronization problem. The process separation gives us clear view at the problem and tasks. A producer is placing items in a queue, and a consumer removes each task from the queue and processes the data. This decoupling means that two components are completely independent. In the case when the queue is full, we usually $spinlock$ producers waiting for consumers to process tasts.
+The producer-consumer pattern is a perfect way to separate workload of processing data from the work to produce them. In other words, we divide our problem into two major components connected usually by a queue. This is a classic example of a multi-process synchronization problem. The process separation gives us clear view at the problem and tasks. A producer is placing items in a queue, and a consumer removes each task from the queue and processes the data. This decoupling means that two components are completely independent \cite{grand02}. In the case when the queue is full, we usually $spinlock$ producers waiting for consumers to process tasts.
 
 \begin{figure}[H]
   \begin{center}
@@ -376,7 +378,8 @@ Figure\ref{fig:uml} shows how such a process could look like. We can see 3 main 
 
 In my implementation I use a generalized version of this patter for multiple procuders and consumers operating on a single fixed buffer. The main idea is to first cluster the mesh to create a separate tasks which later are consumed by threads from a threadpool.
 
-\section{Producer}
+\newpage
+\section{Producer Desing}
 
 To cluster a mesh I use a simple method of dividing the bounding box around the mesh into sub-boxes. When the mesh is read, I calculate the global bounding box, which later is divided into predifined number of clusters.
 
@@ -397,10 +400,10 @@ void function produce {
     for (cluster : clusters){
         set faceCluster to empty
         for (face : cluster.elements){
-            If vote(face) is True
+            if vote(face) is true
                 add face to faceCluster
         }
-        queue.post(faceCluster)
+        add faceCluster to queue
     }
 };
 \end{lstlisting}
@@ -408,4 +411,39 @@ void function produce {
 
 In the line 7 the $vote()$ function is used to assing the correct cluster id and membership of a face. In the line 9 we insert the $faceCluster$ to the queue for further processing.
 
-\section{Consumer}
+\newpage
+\section{Consumer Desing}
+
+The consumer process is desing in a way to utilize funcionality of $\inlinecode{Java}{boost::thread_group}$ and $\inlinecode{Java}{boost::asio::io_service}$. 
+
+Thread group is a class which helps with thread management and provides a container for easy grouping of threads to simplify several common thread creation and management idioms \cite{boost03}. A user has to specify how many threads will be created and added to the threadpool. Those threads operate directly on the queue, removing tasks and processing data. In this case they are preforming simplification of a mesh on each cluster independently.
+\newline
+\begin{center}
+\begin{lstlisting}[caption={C style psuedocode of a task for a consumer},captionpos=b]
+void function task {
+    garland = QSlim();
+    garland->setClustersAABBs();
+    garland->initialize<QuadricError>();
+    garland->simplify<QuadricError>();
+};
+\end{lstlisting}
+\end{center}
+
+Each task gets a single cluster to process. The $QuadricError$ is a type of a quadric error metric where we specify attributes for the calculations like; geometry, color, normals. The class $QSlim$ is responsible for all simplification operations and will be elaborated in the API section.
+
+All deceminating operations executed by threads are independed, except those on the borders. If one vertex of a face belongs to a different cluster and this cluster is processed by a different thread we have to use clever locking strategy. The main idea is to lock the whole neighborhood of an edge. To avoid deadlocks I used specialized version of $\inlinecode{Java}{boost::recursive_mutex}$ which allows to be locked multiple times by the same thread. In the border situation, the best solution for obtaining a lock is using the method $\inlinecode{Java}{bool try_lock()}$ which returns immediately false if the mutex is already locked by a different thread. It means that the given neighbourhood is already processing by a different thread and the simplification process is terminated.
+
+$\inlinecode{Java}{boost::asio::io_service}$ is responsible for the whole producer consumer workflow and is the centerpiece in my implementation. The service nicely utilizes funcionality of a threadpool. Using the $post()$ method I create tasks which are pushed to the queue and later processed by threads from the threadpool.
+
+\newpage
+\section{Resutls}
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=18cm]{chart}
+    \caption{Time of execution in seconds with different number of threads and clusters.}
+    \label{fig:clustering}
+  \end{center}
+\end{figure}
+
+\chapter{API}
