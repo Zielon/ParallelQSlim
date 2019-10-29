@@ -26,4 +26,9 @@ Gilbert Strang.
 \newblock {\em Linear Algebra and its Applications}.
 \newblock Harcourt Brace Jovanovich, San Diego, Third edition, 1988.
 
+\bibitem[SY01]{yang01}
+C.~C Jay~Kuo Sheng~Yang, Chang-Su~Kim.
+\newblock {\em View-dependent progressive mesh coding for graphic streaming}.
+\newblock Multimedia Systems and Applications IV, 2001.
+
 \end{thebibliography}
