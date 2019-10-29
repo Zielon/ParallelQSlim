@@ -438,12 +438,67 @@ $\inlinecode{Java}{boost::asio::io_service}$ is responsible for the whole produc
 \newpage
 \section{Resutls}
 
+The tests were performed on a mesh with 5990070 faces and 3212031 vertices. I ran 3 different setups:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{ |c|c|c| } 
+ \hline
+ Number of clusters & Number of threads & Total time processing\\
+ \hline
+ 27 & 27 & 522.197s\\ 
+ 1 & 1 & 1423.17s\\ 
+ 64 & 64 & 484.66s\\ 
+ \hline
+\end{tabular}
+\caption{3 different test setups}
+\end{table}
+
 \begin{figure}[h!]
   \begin{center}
     \includegraphics[width=18cm]{chart}
     \caption{Time of execution in seconds with different number of threads and clusters.}
-    \label{fig:clustering}
+    \label{fig:execution_time}
   \end{center}
 \end{figure}
+
+The Figure \ref{fig:execution_time} shows how much time does it take to simplify a mesh in one iteration. The iteration in this case is the full pass of the simplificaiton algorithm with waiting for all threads to finish processing. Naturally, the time is smaller in each iteration because we have less vertices to process. As we could expect, the single threaded version performs very poorly. Using more than 1 thread we can achieve better results with the best speedup around 3.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=16cm]{chart2}
+    \caption{The best speedup for each iteration}
+    \label{fig:speedup}
+  \end{center}
+\end{figure}
+
+The Figure \ref{fig:speedup} desciribes the best speedup for each iteration from the tests in Figure \ref{fig:execution_time}. As you can see, the value oscillates around 3 which a decent result for this complex algorithm. Moreover, in the Figure\ref{fig:execution_time} we can see Amdahl's law in practice. Incerasing number of threads does not improve speed up \cite{amdahl67}.
+
+\newpage
+\section{Taubin Smoothing}
+
+During my research and later implementation of the algorithm I noticed faster convergance to selected level of reduction if a mesh smoothing is used. For my purposes I used Taubin Smoothing algorithm. The method is a linear low-pass filter that removes high curvature variations and does not produce shrinkage \cite{taubin95}. After the mesh is loaded to the program, I perform the smoothing with:
+
+\begin{table}[h!]
+\centering
+\begin{tabular}{ |c|c|c| } 
+ \hline
+ Iterations & Lambda & Mu\\
+ \hline
+ 7 & 0.5 & -0.67\\ 
+ \hline
+\end{tabular}
+\caption{Taubin algorithm parameters.}
+\end{table}
+
+
+
+\newpage
+\section{Summary of the Algorithm}
+
+\begin{enumerate}
+\item Smooth mesh using Taubin 
+\end{enumerate}
+
 
 \chapter{API}

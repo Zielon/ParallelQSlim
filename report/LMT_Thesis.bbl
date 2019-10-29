@@ -1,5 +1,11 @@
 \begin{thebibliography}{CLRS01}
 
+\bibitem[Amd67]{amdahl67}
+Gene~M. Amdahl.
+\newblock {\em Validity of the Single Processor Approach to Achieving Large
+  Scale Computing Capabilities}.
+\newblock ACM, 1967.
+
 \bibitem[CLRS01]{cormen01}
 Thomas~H. Cormen, Charles~E. Leiserson, Ronald~L. Rivest, and Clifford Stein.
 \newblock {\em Introduction to Algorithms}.
@@ -36,6 +42,11 @@ Gilbert Strang.
 C.~C Jay~Kuo Sheng~Yang, Chang-Su~Kim.
 \newblock {\em View-dependent progressive mesh coding for graphic streaming}.
 \newblock Multimedia Systems and Applications IV, 2001.
+
+\bibitem[Tau95]{taubin95}
+G.~Taubin.
+\newblock {\em Curve and Surface Smoothing Without Shrinkage}.
+\newblock IEEE Computer Society, 1995.
 
 \bibitem[WE19]{boost03}
 Kempf William~E.
