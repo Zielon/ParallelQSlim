@@ -184,6 +184,7 @@ void garland::Mesh::update() {
 
         vertex->setOnBorder(false);
         vertex->setQuadric(nullptr);
+        vertex->setNormal(Eigen::Vector3d(0, 0, 0));
     }
 
     for (const auto &pair: faces) {
@@ -194,6 +195,7 @@ void garland::Mesh::update() {
         }
 
         face->setOnBorder(false);
+        face->setClustered(false);
 
         auto p = vertices[face->getVertex(0)];
         auto q = vertices[face->getVertex(1)];
@@ -203,9 +205,9 @@ void garland::Mesh::update() {
 
         face->setNormal(n);
 
-        p->setNormal(n);
-        q->setNormal(n);
-        r->setNormal(n);
+        p->addNormal(n);
+        q->addNormal(n);
+        r->addNormal(n);
     }
 
     for (const auto &index: facesToRemove) faces.erase(index);

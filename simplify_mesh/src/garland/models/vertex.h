@@ -20,9 +20,9 @@ namespace garland {
         int clusterId = -1;
         bool invalid = false;
         bool onBorder = false;
-        Eigen::Vector3d position = Eigen::Vector3d(0,0,0);
-        Eigen::Vector3d normal = Eigen::Vector3d(0,0,0);
-        Eigen::Vector3d color = Eigen::Vector3d(0,0,0);
+        Eigen::Vector3d position = Eigen::Vector3d(0, 0, 0);
+        Eigen::Vector3d normal = Eigen::Vector3d(0, 0, 0);
+        Eigen::Vector3d color = Eigen::Vector3d(0, 0, 0);
         std::shared_ptr<garland::Quadric> Q;
         std::set<int> faces;
         boost::recursive_mutex mtx;
@@ -87,6 +87,10 @@ namespace garland {
         Eigen::Vector3d getColor() { return color; }
 
         std::shared_ptr<garland::Quadric> getQuadric() { return Q; }
+
+        void addNormal(const Eigen::Vector3d &);
+
+        void normalize();
 
         void save(std::ofstream &out) const;
 

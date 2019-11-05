@@ -117,6 +117,10 @@ namespace garland {
 
                 face->setNormal(Geometry::computeNormal(p->getPosition(), q->getPosition(), r->getPosition()));
 
+                p->normalize();
+                q->normalize();
+                r->normalize();
+
                 auto attributes = Geometry::computeAttributes<QuadricError>(p, q, r);
                 auto Q = std::shared_ptr<QuadricError>(new QuadricError(attributes));
 

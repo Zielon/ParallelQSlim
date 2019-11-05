@@ -126,3 +126,10 @@ Eigen::VectorXd garland::Vertex::attributes() {
     return parameters;
 }
 
+void garland::Vertex::addNormal(const Eigen::Vector3d &n) {
+    normal += n;
+}
+
+void garland::Vertex::normalize() {
+    normal.normalize();
+}

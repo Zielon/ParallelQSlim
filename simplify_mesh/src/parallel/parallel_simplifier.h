@@ -58,7 +58,7 @@ namespace parallel {
                 std::set<garland::FaceId> keys;
                 for (auto j : cluster.elements) {
                     for (auto &face: masterMesh.getFacesForVertex(j)) {
-                        if (vote(face, cluster.id)) {
+                        if (vote(face, cluster.id) && !face->isClustered()) {
                             keys.insert(face->getId());
                             face->setClustered(true);
                         }
@@ -147,6 +147,8 @@ namespace parallel {
                    "| step = %14.3f%% | original = %6.3f%% "
                    "| error level = %.10f | time = %.2fs\n",
                    currentIteration + 1, step, global, garland::QSlim::ERROR_LEVEL, seconds);
+
+//            printf("%.2f\n", seconds);
 
             // Check if terminate a next iteration
             if (reduction > 0.0 && global < reduction) {
