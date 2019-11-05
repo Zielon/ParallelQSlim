@@ -1,11 +1,11 @@
 \chapter{Basic Simplification Algorithm}
 \thispagestyle{empty}% no page number in chapter title page
-In this section, I will present a basic algorithm for mesh simplification which is founded on serverl fundamental components: iterative vertex contraction, quadric error metric, mesh clustering and parallel strategy to consume those clusters. In this chapter I will elaborate foundations for the geometric error metric. In the next chapter I am going to introduce the extended version of this algorithm which additionaly uses color and normals for the error metric. Finally, in the forth chapter, I will describe the parallel approch to sovle the problem.
+In this section, I will present a basic algorithm for mesh simplification which is founded on serverl fundamental components: iterative vertex contraction, quadric error metric, mesh clustering and parallel strategy to consume those clusters. In this chapter I will elaborate foundations for the geometric error metric. In the next chapter I am going to introduce the extended version of this algorithm which additionaly uses color and normals for the error metric. Finally, in the forth chapter, I will describe the parallel approch with adaptive thresholding to sovle the problem.
 \numberwithin{equation}{section}
 \section{Design}
 The core of the algorithm is based on Michael Garland's work Quadric-Based Polygonal Surface Simplification \cite{garland99} where he suggests an algorithm capable of producing high-quality approximations of polygonal meshes. The main assumption is that the approximation need not to maintain the topology of the original surface and is a nicely balanced trade-off between quality and size. 
 
-The goal of this work was to adopt this algorithm to a parallel framework capable of fast progresive mesh streaming \cite{yang01} for renderer engines in browsers. An example of such a renderer is Indoorviewer product created by NavVis. Depending on selected mesh resolution and level of details an appropriate mesh will be streamed to a browser. Therefore, the size and quality is crucial for the endpoint users to get maximal usability. Using the assumption that planar surfaces need much less trinagles to describe geometry we can get light and detailed meshes which are perfect for streaming purposes.
+The goal of this work was to adopt this algorithm to a parallel framework with adaptive thresholding, capable of fast progresive mesh streaming \cite{yang01} for renderer engines in browsers. An example of such a renderer is Indoorviewer product created by NavVis. Depending on selected mesh resolution and level of details an appropriate mesh will be streamed to a browser. Therefore, the size and quality is crucial for the endpoint users to get maximal usability. Using the assumption that planar surfaces need much less trinagles to describe geometry we can get light and detailed meshes which are perfect for streaming purposes.
 \clearpage
 
 \section{Iterative Vertex Contraction}
@@ -27,7 +27,7 @@ The simplification algorithm is based on several atomic operations. The most imp
 
 In the parallel framework the crucial aspect is locking all vertices and faces for the current edge to prevent from multiple threads modify the same region. To achieve this, $tryLock()$ method was used. To perform a contraction we have to check if it is possible to lock the whole neighbourhood, in the other case, it means that already a different thread is manipulating a given region. In such a situation the contraction is stopped for the current thread.
 
-The algorithm is a greedy procedure \cite{cormen01} driven by the cost of contraction. To achieve simplification we apply a sequence of edge contraction. Where the sequence is created as follows \cite{garland97}:
+The algorithm is a greedy procedure driven by the cost of contraction \cite{cormen01}. It stops when the current threshold level is reached. To achieve simplification we apply a sequence of edge contraction. Where the sequence is created as follows \cite{garland97}:
 
 \begin{enumerate}
 \item Select a set of candidate vertex pairs.
@@ -41,11 +41,13 @@ The algorithm is a greedy procedure \cite{cormen01} driven by the cost of contra
 \end{enumerate}
 \end{enumerate}
 
-Each edge is associated with a cost of contraction which is basically the amount of error made during deletion of a given pair of vertices. This cost is a key in the minimum heap \cite{cormen01} which is iteratively $pop()$. In each main iteration (steps from 1 to 4) we contract edges up to the current adaptive threshold level. If a current edge's cost is bigger or equal than the acceptable error, the main iteration procedure is stopped and the remaining egdes in the heap are ignored. In a next iteration the error is slightly increased in such a way that perviously contracted regions are even more simplified. The error calculations are based on a hyperparameter $aggressiveness$ and a current iteration value:
+Each edge is associated with a cost of contraction which is basically the amount of error made during deletion of a given pair of vertices. This cost is a key in the minimum heap \cite{cormen01} which is iteratively $pop()$. In each main iteration (steps from 1 to 4) we contract edges up to the current adaptive threshold level. If a current edge's cost is bigger or equal than the acceptable error, the main iteration procedure is stopped and the remaining egdes in the heap are ignored. In a next iteration we rebuild the heap and the error level is slightly increased in such a way that perviously contracted regions are even more simplified. The error calculations are based on a hyperparameter $aggressiveness$ and a current iteration value:
 \begin{align}
 error(i)=0.000000001*(i+3)^a
 \end{align}
 where $i$ is the iteration and $a$ is the aggressiveness.
+
+Rebulding heap captures the change of geometry made in a  contraction for the whole mesh. After one contraction we update only first order neighbours of a given vertex. Therefore, we need to rebuild heap to reflect the global change.
 
 \section{Assessing Cost of Contraction}
 In this section I will elaborate how to measure the cost of contraction for an edge just for geometry attributes. Maintaining high level of details and faithful representation of the original mesh we should reflect the cost in the effect of changing geometry of the surface. Meaning, if the error is small the geometry changes insignificantly. An edge with a small error is a perfect candiate for removal.
@@ -55,7 +57,7 @@ Because the metric is plane-based, first, let me define a standard representatio
 D^2(\mathbf{v}) = (\mathbf{n}^T\mathbf{v}+d)^2 = (ax + by + cz + d)^2
 \label{quadric_distance}
 \end{align}
-The error for the set of planes associated with the vertex $v$ is then defiend as:
+The error for the set of planes associated with the vertex $v$ is then defiend as (we have to remember that this set is purely conceptual):
 \begin{align}
 \sum_{i} D_i^2(\mathbf{v}) = \sum_{i} (\mathbf{n_i}^T\mathbf{v}+d_i)^2
 \end{align}
@@ -231,6 +233,37 @@ In the case when a matrix is not invertible the following computations are perfo
 In practice it is very rare that a matrix determinant is zero. Due to the limits of floating point precision. The optimal vertex placement will tend to create closely fitting approximations of the original mesh. Which at the end gives a better shaped triangles \cite{garland99}. The placement strategy for the pair of contraction $(\mathbf{v_i}, \mathbf{v_j})$ is to always move $\mathbf{v_j}$ to the position of $\mathbf{v_i}$. It eliminates a problem of storing delta of the new vertex position.
 
 \newpage
+\section{Constraints}
+
+Simplification requiers several different constrains and checks to not introduce an error in the new vertex placement position. The quality of approximation is critical for producing simplified meshes. For instance, the borders of a mesh have to be treated as a special case.
+
+There is a few options how we can solve the problem of borders. In my implementation I used a version with adding the quadric error of a plane perpendicular to a given border edge where the perpendicular plane defines a boundary constraint. The other option is to do not touch border vertices. However, this option is problematic if we want to achieve a certain level of simplification. The number of border vertices is by average 15\% of the mesh. It means that this 15\% has to be transferd from the complex shapes which we would like to preserve to the simplification pool. Therefore, we sacrifice the quality of the mesh for preserving edges.
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=13cm]{border_constraint}
+    \caption{An example of the border constrain \cite{garland99}.}
+    \label{fig:border_constraint}
+  \end{center}
+\end{figure}
+
+The perpendicular plane constraint is very convinient in many aspects. For instance, it requires only to calculate the quadric error and add this error to the initial quadric error of each vertex on the boundary. It can be easily done in the initalization step when the heap is built. After each main iteration, the vertices are flagged if they lay on the border. Once the perpendicular error planes are accumulated in the vertices the algorithm continues the regular routine.
+
+We can additionally weight the perpendicular plane constraint by an arbitrary factor. I do not use the factor multiplication because of the adaptive thresholding which ignores all edges above the current threshold level. In my version of the algorithm, the edges are consumed as soon as possible to reduce the simplification pool.
+
+The other very important problem is vertex folding. A vertex placement can introduce a new position for a vertex which folds the neighbourhood and procudes degeneracies into the mesh. 
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=15cm]{fold}
+    \caption{An edge contraction which causes the mesh to fold over on itself \cite{garland99}.}
+    \label{fig:fold}
+  \end{center}
+\end{figure}
+
+Before performing a contraction the algorithm has to check if the new position is a valid one. For example Figure \ref{fig:fold} shows that the new position $\mathbf{\bar{v}}$ is degenerated and it folds one of the faces into the darkened area. In this case we have to stop contraction for this particular edge. To detect those kind of situations I examine the normals fo the faces around $\mathbf{v_i}, \mathbf{v_j}$. If the face normal changes by some threshold level, the contraction is assumed to introduce flipping and is discarded.
+
+\newpage
 \section{Summary of Garland's Algorithm}
 
 Below I present the complete algorithm in 5 steps. In the next chapter I will elaborate how this concept is incorporated in multithreded approach.
@@ -257,7 +290,7 @@ Algorithm \cite{garland99}:
 \end{enumerate}
 \end{enumerate}
 
-In the next chapter I would like to give a brief introduction to extended version of the algoritm which includes color and normals.
+The above algorithm is the main core of my implemenation. Every thread will perform the simplification using quadric error metrics, based on Garland's work. Next, I would like to give a brief introduction to extended version of the algoritm which includes color and normals.
 
 \chapter{Extended Simplification Algorithm}
 
@@ -331,8 +364,41 @@ The matrix A from \ref{fig:hexagon} is then
 \end{array}\right]
 \end{align}
 
-Building the quadric and finding the optimal position is exactly the same like in the geometry case. To use different metric we have to only change computations of orthonormal vectors. In Table\ref{tab:color_simplification} we can see the results of using color and geometry metric error. We can easily notice that the simplifcation follows the color pattern. In some cases its a desired features, however, we have to be carefule about the noise of the gradient.
+Building the quadric and finding the optimal position is exactly the same like in the geometry case. To use different metric we have to only change computations of orthonormal vectors. 
 
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=15cm]{params_table}
+    \caption{Summary of common extended quadric types \cite{garland99}.}
+    \label{fig:params_table}
+  \end{center}
+\end{figure}
+
+\section{Results}
+
+Table \ref{tab:color_simplification} shows the results of using color and geometry metric error. We can easily notice that the simplifcation follows the color pattern. In some cases its a desired features, however, we have to be carefule about the noise of the gradient.
+
+In the case of 3D scanning we get vertices with several attributes; for instance color, normal and geometry. Unfortunately, the color introduces quite substantial error. If the color gradient was constant in most of the places, the whole simplification would hugely benefit from it. However, not only a camera introduces an error but also a SLAM algorithm. Therefore, we either incorporate, normals, color, geometry all together or use them separately.
+
+As you can see in the Table \ref{tab:desk}, complex shapes like plants or a small fan in front of the monitor preserve their initial complexity. However, flat surfaces like the desk or the monitor are significally simplified. Therefore, the amount of removable faces, to achieve a particular simplification level, was transfered from the complex shapes pool to the flat surface pool.
+
+\begin{center}
+  	\begin{table}[H]
+  	\begin{center}
+  	\begin{tabular}{cc}
+	\begin{subfigure}{0.8\textwidth}\centering\includegraphics
+		[width=1\columnwidth]{desk_2}\caption{Original}\label{original_100_ref}\end{subfigure}\\
+	\begin{subfigure}{0.8\textwidth}\centering\includegraphics
+		[width=1\columnwidth]{desk}\caption{Color, geometry and normal simplification}\label{original_70_ref}\end{subfigure}\\
+	\end{tabular}
+	\caption{Comparison of simplification with all attributes [geometry, color, normal] with 87\% of reduction to the original mesh.}
+  	\label{tab:desk}
+  	\end{center}
+	\end{table}
+\end{center}
+
+\newpage
 \begin{center}
   	\begin{table}[H]
   	\begin{center}
@@ -352,13 +418,13 @@ Building the quadric and finding the optimal position is exactly the same like i
 	\begin{subfigure}{0.5\textwidth}\centering\includegraphics
 		[width=8cm,height=6cm]{color_6}\caption{Color and geometry simplification}\label{color2}\end{subfigure}
 		\end{tabular}
-  	\caption{Comparison of gradient guided simplification.} \label{tab:color_simplification}
+  	\caption{Comparison of gradient guided simplification [geometry, color].} \label{tab:color_simplification}
   	\end{center}
 	\end{table}
 \end{center}
 
 
-\chapter{Parallel Implementation of the Algorithm}
+\chapter{Parallel Simplification Algorithm}
 
 In this chapter, I will describe my approach to design a parallel version of Garland's simplification algorithm. First, I would like to describe Producer-Consumer design patter, libraries and ideas used in the implementation to make it thread-safe. Next, I will analize the speedup and potential problems which can arose during an exacution. Finally, summarize the approach and elaborate further improvements.
 
@@ -436,22 +502,28 @@ All deceminating operations executed by threads are independed, except those on 
 $\inlinecode{Java}{boost::asio::io_service}$ is responsible for the whole producer consumer workflow and is the centerpiece in my implementation. The service nicely utilizes funcionality of a threadpool. Using the $post()$ method I create tasks which are pushed to the queue and later processed by threads from the threadpool.
 
 \newpage
+\section{Desing}
+
+
+
+\newpage
 \section{Resutls}
 
-The tests were performed on a mesh with 5990070 faces and 3212031 vertices. I ran 3 different setups:
+In this section I will elaborate results of multithreded experiments of my algortihm, where I investigated the time of execution in multiple scenarios. The tests were performed on a machine with 32 GB of RAM and Intel i7-6700 CPU 3.40GHz with 8 physical cores on a mesh with 982624 faces and 517715 vertices. I ran 4 different setups where the objective was the reduction level 85\% of the original mesh:
 
 \begin{table}[h!]
 \centering
 \begin{tabular}{ |c|c|c| } 
  \hline
- Number of clusters & Number of threads & Total time processing\\
+ Number of clusters & Number of threads in the pool & Total time processing\\
  \hline
- 27 & 27 & 522.197s\\ 
- 1 & 1 & 1423.17s\\ 
- 64 & 64 & 484.66s\\ 
+ 1 & 1 & 151.611s\\ 
+ 8 & 8 & 75.557s\\ 
+ 27 & 27 & 57.405s\\
+ 27 & 8 & 58.957s\\
  \hline
 \end{tabular}
-\caption{3 different test setups}
+\caption{4 different test setups}
 \end{table}
 
 \begin{figure}[h!]
@@ -462,7 +534,7 @@ The tests were performed on a mesh with 5990070 faces and 3212031 vertices. I ra
   \end{center}
 \end{figure}
 
-The Figure \ref{fig:execution_time} shows how much time does it take to simplify a mesh in one iteration. The iteration in this case is the full pass of the simplificaiton algorithm with waiting for all threads to finish processing. Naturally, the time is smaller in each iteration because we have less vertices to process. As we could expect, the single threaded version performs very poorly. Using more than 1 thread we can achieve better results with the best speedup around 3.
+The Figure \ref{fig:execution_time} shows how much time does it take to simplify a mesh in one iteration. The iteration in this case is the full pass of the simplificaiton algorithm with waiting for all threads to finish processing. Naturally, the time is getting smaller with each iteration because we have less vertices to process. As we could expect, the single threaded version performs very poorly. Using more than 1 thread we can achieve better results with the best speedup around 3.
 
 \begin{figure}[H]
   \begin{center}
@@ -472,12 +544,16 @@ The Figure \ref{fig:execution_time} shows how much time does it take to simplify
   \end{center}
 \end{figure}
 
-The Figure \ref{fig:speedup} desciribes the best speedup for each iteration from the tests in Figure \ref{fig:execution_time}. As you can see, the value oscillates around 3 which a decent result for this complex algorithm. Moreover, in the Figure\ref{fig:execution_time} we can see Amdahl's law in practice. Incerasing number of threads does not improve speed up \cite{amdahl67}.
+The Figure \ref{fig:speedup} desciribes the best speedup for each iteration from the tests in Figure \ref{fig:execution_time}. As you can see, the value oscillates around 2.5 and 3 which is a decent result for this complex algorithm. Moreover, in the Figure \ref{fig:execution_time} we can see Amdahl's law in practice. Incerasing number of threads does not improve speed up \cite{amdahl67}.
+
+To avoid synchronization overhead I tried deep copies of a sub-meshes passed to processing threads. The problem with this solution is merging sub-meshes into the master mesh after simplification. To preserve local geometry on the edges the process of decemination need not to change or remove them. It gives a problem with convergence since we cannot easily distinguish artificiality created edges due to clustering between original edges which we would like to simplify. Moreover, merging meshes takes time so at the end the algorithm does not gain performance speedup.
+
+Summarizing, the parallel execution of clusters gives a desired speedup. The algorithm is able to process big meshes up to a few million of faces in reasonable time which is necessary for streaming purposes and a production usage.
 
 \newpage
 \section{Taubin Smoothing}
 
-During my research and later implementation of the algorithm I noticed faster convergance to selected level of reduction if a mesh smoothing is used. For my purposes I used Taubin Smoothing algorithm. The method is a linear low-pass filter that removes high curvature variations and does not produce shrinkage \cite{taubin95}. After the mesh is loaded to the program, I perform the smoothing.
+During my research and later implementation of the algorithm I noticed faster convergance to selected level of reduction if a mesh smoothing is used. For my purposes I used Taubin Smoothing algorithm. The method is a linear low-pass filter that removes high curvature variations and does not produce shrinkage \cite{taubin95}. After the mesh is loaded to the program smoothing is done.
 
 \begin{center}
   	\begin{table}[h!]
@@ -506,26 +582,52 @@ During my research and later implementation of the algorithm I noticed faster co
 \caption{Taubin algorithm parameters.}
 \end{table}
 
-The simplification was ran on the mesh with 396277 faces and 208825 vertices. After the process the mesh was reduced to 50009 faces and 29347 vertices. In the Table 
+The simplification was ran on the mesh with 396277 faces and 208825 vertices. The mesh was reduced to 50009 faces and 29347 vertices. In the Table \ref{fig:time_speedup} we can see that the speedup comapred with the single core is around 1.6. Additionaly in the Table \ref{tab:smoothing_effect} we can see that planar surfaces look better after simplification with smoothing.
 
 \begin{table}[h!]
 \centering
 \begin{tabular}{ |c|c| } 
  \hline
- Smoothing time & Without smoothing time\\
+ Time with smoothing & Time without smoothing\\
  \hline
  27.73 s & 43.06 s\\ 
  \hline
 \end{tabular}
 \caption{Taubin algorithm parameters.}
+\label{fig:time_speedup}
 \end{table}
+
+\begin{figure}[h!]
+  \begin{center}
+    \includegraphics[width=16cm]{convergance}
+    \caption{Convergance to 15\% of the original mesh.}
+    \label{fig:convergance}
+  \end{center}
+\end{figure}
+
+Figure \ref{fig:convergance} shows that with smoothing the convergance takes only 19 full iterations, whereas for a regular version it takes 28. It means that with a small overhead, the complexity of Taubin's algorithm is linear $O(n)$ \cite{taubin95}, we can gain better quality of the simplified mesh and additional speedup.
 
 \newpage
 \section{Summary of the Algorithm}
 
 \begin{enumerate}
-\item Smooth mesh using Taubin 
+\item Smooth mesh using Taubin algorithm (optional).
+\item Cluster the mesh:
+\begin{enumerate}
+\item Split the mesh according to number of selected clusters; for example 2x2x2=8.
+\item Add a task for each cluster to the queue.
+\end{enumerate}
+\item Wait for all threads from the threadpool to finish processing simplification algorithm [QSlim] ran on all clusters. Each thread does:
+\begin{enumerate}
+\item Build the heap with edges.
+\item Deceminate edges till reaching the threshold level.
+\end{enumerate}
+\item Update the mesh structure:
+\begin{enumerate}
+\item Remove faces flagged as invalid
+\item Reset properties for each remaining face and vertex
+\end{enumerate}
+\item Repeat from the second step till convergance.
 \end{enumerate}
 
-
-\chapter{API}
+As you can see above, the parallel algorithm nicely wraps Garland's algorithm in the third step. We repeat the whole procedure from the second step till either reduction level is reached or the number of iterations is exceeded. To achieve a nice planar simplification the adaptive threshold level is used. The third step is terminated for a thread if the cost level is higher than the threshold.
