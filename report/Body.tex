@@ -297,7 +297,7 @@ The above algorithm is the main core of my implemenation. Every thread will perf
 The previous implementation includes only geometric error. In this chapter we incorporate more attributes to improve simplification. Using additionally, color and normals we can easier deceminate planar surfaces and achieve better results. However, in the noisy environment of color (which is usually the case in scans), gradient guided simplification may produce poor results.
 
 \section{Design}
-In this section we assume that each vertex is additionally associated with color $\mathbf{c} = [r \ g \ b]^T$ and $\mathbf{n} = [nx \ ny \ nz]^T$. For the sake of simplicity, lets consider an example with geometry and color only. Assume that each vertex is attributed with $\mathbf{v} = [x \ y \ z \ r \ g \ b]^T$. Figure~\ref{fig:hexagon} shows an example of such a mesh. A triangle is defined as $T = (\mathbf{p}, \mathbf{q}, \mathbf{r})$ with edges $\mathbf{h} = \mathbf{q} - \mathbf{p}$ and $\mathbf{k} = \mathbf{r} - \mathbf{p}$. Now, because our problem is more that 3 dimensional, we have to use a different method to calucalte orthogonal vectors to the plane defined by the face. Fortunately, Gram-Schmidt orthogonalization \cite{strang88} helps us to solve this problem.
+In this section we assume that each vertex is additionally associated with color $\mathbf{c} = [r \ g \ b]^T$ and $\mathbf{n} = [nx \ ny \ nz]^T$. For the sake of simplicity, lets consider an example with geometry and color only. Assume that each vertex is attributed with $\mathbf{v} = [x \ y \ z \ r \ g \ b]^T$. Figure~\ref{fig:hexagon} shows an example of such a mesh. A triangle is defined as $T = (\mathbf{p}, \mathbf{q}, \mathbf{r})$ with edges $\mathbf{h} = \mathbf{q} - \mathbf{p}$ and $\mathbf{k} = \mathbf{r} - \mathbf{p}$. Now, because our problem is more that 3 dimensional, we have to use a different method to calucalte orthogonal vectors to the plane defined by the face than simply calculating a corss product. Fortunately, Gram-Schmidt orthogonalization \cite{strang88} helps us to solve this problem.
 
 \begin{figure}[H]
   \begin{center}
@@ -365,7 +365,6 @@ The matrix A from \ref{fig:hexagon} is then
 \end{align}
 
 Building the quadric and finding the optimal position is exactly the same like in the geometry case. To use different metric we have to only change computations of orthonormal vectors. 
-
 
 \begin{figure}[H]
   \begin{center}
@@ -504,7 +503,9 @@ $\inlinecode{Java}{boost::asio::io_service}$ is responsible for the whole produc
 \newpage
 \section{Desing}
 
+The algorithm is based on Garland's simplification quadric error metric algorithm. The main difference is clustering and parallel consuming parts of a mesh with adaptive thresholding for each iteration. This approach guarantees global update and accumulation of quadrics for each iteration in such a way that planar surfaces are always deceminated first. The main goal of this work, is to transfer from global pool of vertices for a mesh to two separate pools, one for complex shapes and one for planar surfaces. A vertex pools are just a conceptual term by which I mean the number of vertices which we want to remove to achieve our convergance criteria. However, to keep complex shapes, vertices from planar surfaces have to be removed as much as possible to maintain balance in pools. Therefore, outer loop of my algorithm, which increases the threashold level, is so crucial. The mesh reconstruction always creates a mesh with evenly distributed triangles. This assumption, drives my design of the algorithm. Complex shapes have high quardic error, if we appropriately manipulate the threshold we can achieve the transfer goal.
 
+To improve the time of convergance we can always increase aggressiveness of the simplification. The only problem is the final quality of the approximation. The iterative nature of using Garland's algorithm and adaptive threshold to focus only on planar surface does not always hold in this case. However, we can save around 50\% time of processing slightly increasing aggressiveness, which can be easily modify be program parameters.
 
 \newpage
 \section{Resutls}
@@ -631,3 +632,78 @@ Figure \ref{fig:convergance} shows that with smoothing the convergance takes onl
 \end{enumerate}
 
 As you can see above, the parallel algorithm nicely wraps Garland's algorithm in the third step. We repeat the whole procedure from the second step till either reduction level is reached or the number of iterations is exceeded. To achieve a nice planar simplification the adaptive threshold level is used. The third step is terminated for a thread if the cost level is higher than the threshold.
+
+\newpage
+\section{Comparison to Commercially Available Products}
+
+Most of commercially available algorithms use only geometry to generate an approximation of a mesh. Moreover, libraries like OpenMesh do not provide an API to use all attributes of a vertex. We can add more constraints to our optimization objective but they are not solved jointly like in my case. Additionally, those algorithms simplify a mesh globally which introduces almost even decemination for all surfaces. Below I present comparison of my method with serveral different approaches where the goal was to reduce the original mesh 85\%.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=16cm]{original}
+    \caption{The original mesh.}
+    \label{fig:original}
+  \end{center}
+\end{figure}
+
+Figure \ref{fig:original} shows the original mesh with evenly distributed faces. We can see that the amount of faces used for the wall is unecessary. Therefore, we can successfully apply simplification to this surface.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=16cm]{fast_collapse}
+    \caption{Fast-Quadric-Mesh-Simplification algorithm.}
+    \label{fig:fast_collapse}
+  \end{center}
+\end{figure}
+
+Figure \ref{fig:fast_collapse} shows Fast-Quadric-Mesh-Simplification algorithm which is \href{https://github.com/sp4cerat/Fast-Quadric-Mesh-Simplification}{a github implementation} of memory efficient and very fast edge collapse mesh simplification method. According to the creator its around 4 times faster than Meshlab version. Figure \ref{fig:fast_collapse} shows the result where you can see that all surfaces are deceminated evenly. Moreover, the algorithm is based only on vertex iteration with adaptive thresholding without bulding a heap of edges.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=16cm]{open_mesh}
+    \caption{OpenMesh with geometry and normals.}
+    \label{fig:open_mesh}
+  \end{center}
+\end{figure}
+
+Figure \ref{fig:open_mesh} shows the usage of OpenMesh library, where the decemination was done using geometry and normals. Because of that, border edges were not touched to not introduce errors in the approximation. Its mostly visible on the plant structure or the monitors edges. This method gives the poorest result, however, it is almost as fast as Fast-Quadric-Mesh-Simplification.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=16cm]{mesh_lab}
+    \caption{MeshLab version of simplification.}
+    \label{fig:mesh_lab}
+  \end{center}
+\end{figure}
+
+As you can see in the Frigure \ref{fig:mesh_lab} the approximation is very similar to Figure \ref{fig:fast_collapse}. However, the MeshLab version is slower than Fast-Quadric-Mesh-Simplification algorithm.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=16cm]{my_3}
+    \caption{Parallel QSlim with adaptive thresholding algorithm using only geometry.}
+    \label{fig:my_3}
+  \end{center}
+\end{figure}
+
+Figure \ref{fig:my_3} shows approximation of my version of the algorithm. The complex shapes are preserved much better than in all previous versions. However, there is still room for even more aggressive decemination on walls. To achieve it, we need to use more attributes in our joint optimization. 
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=16cm]{my_9}
+    \caption{Parallel QSlim with adaptive thresholding algorithm using geometry, color and normals.}
+    \label{fig:my_9}
+  \end{center}
+\end{figure}
+
+Figure \ref{fig:my_9} shows the best approximation under the constrain of deceminating most of the planar surface. All complex shapes are almost intacted from the original mesh. The faces which describe the wall are as big as possible. Moreover, iterative nature of the algorithm allows to level small surfaces elevation changes. For instance, the interior part of the pouf near the wall. In the Figure \ref{fig:my_3} we can see that the noise and level changes prevented this region from being simplified. In the version with all attributes $[geometry, normal, color]$, the interior part is nicely leveled.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=16cm]{rapid_compact}
+    \caption{RapidCompact version of simplification.}
+    \label{fig:rapid_compact}
+  \end{center}
+\end{figure}
+
+For the completeness, I used for the comparison a paid version of the algorithm done by RapidCompact. However, the result is almost exactly the same like in the case of the MeshLab and Fast-Quadric-Mesh-Simplification algorithm.

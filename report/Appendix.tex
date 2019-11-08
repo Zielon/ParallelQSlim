@@ -1,19 +1,29 @@
-\chapter{Ein Beispiel für einen Anhang}
+\chapter{Examples of simplifications}
 \thispagestyle{empty}% no page number in chapter title page
-Beispiel für eine Tabelle:
 
-\begin{table}[htbp]
-\caption{Beispiel für eine Beschriftung. Tabellenbeschriftungen sind üblicherweise über der Tabelle platziert.}
-  \begin{center}
-    \begin{tabular}{lcr}
-      \hline
-      left & center & right\\
-      \hline
-      entry & entry & entry \\
-      entry & entry & entry \\
-      entry & entry & entry \\
-      \hline
-    \end{tabular}    
-    \label{tab:ToRef}
-  \end{center}
-\end{table}
+\begin{sidewaysfigure}[ht]
+    \includegraphics[width=20cm]{final_0}
+    \caption{Original mesh with evenly distributed triangles.}
+    \label{fig:final_0}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}[ht]
+    \includegraphics[width=20cm]{final_3}
+    \caption{Simplified mesh to 15\% of the original using [geometry]}
+    \label{fig:final_3}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}[ht]
+    \includegraphics[width=20cm]{final_6}
+    \caption{Simplified mesh to 15\% of the original using [geometry, color]}
+    \label{fig:final_6}
+\end{sidewaysfigure}
+
+\newpage
+\begin{sidewaysfigure}[ht]
+    \includegraphics[width=20cm]{final_9}
+    \caption{Simplified mesh to 15\% of the original using [geometry, color, normal]}
+    \label{fig:final_9}
+\end{sidewaysfigure}
