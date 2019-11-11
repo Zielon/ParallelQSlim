@@ -444,7 +444,7 @@ Figure \ref{fig:uml} shows how such a process could look like. We can see 3 main
 In my implementation, I use a generalized version of this patter for multiple procuders and consumers operating on a single fixed buffer. The main idea is to first cluster the mesh to create a separate tasks, which later are consumed by threads from a threadpool.
 
 \newpage
-\section{Producer Desing}
+\section{Producer Design}
 
 To cluster a mesh I use a simple method of dividing the bounding box around the mesh into sub-boxes. When the mesh is read, I calculate the global bounding box, which later is divided into predifined number of clusters.
 
@@ -477,7 +477,7 @@ void function produce {
 In the line 7 the $vote()$ function is used to assing the correct cluster id and membership of a face. In the line 9 we insert the $faceCluster$ to the queue for further processing.
 
 \newpage
-\section{Consumer Desing}
+\section{Consumer Design}
 
 The consumer process is desing in a way to utilize funcionality of $\inlinecode{Java}{boost::thread_group}$ and $\inlinecode{Java}{boost::asio::io_service}$. Thread group is a class which helps with management and provides a container for easy grouping of threads to simplify several common thread creation and management idioms \cite{boost03}. A user has to specify how many threads will be created and added to the threadpool. Those threads operate directly on the queue, removing tasks and processing data. In this case they are preforming simplification of a mesh on each cluster independently.
 \newline
@@ -499,7 +499,7 @@ All deceminating operations executed by threads are independed, except those on 
 $\inlinecode{Java}{boost::asio::io_service}$ is responsible for the whole producer consumer workflow and is the centerpiece in my implementation. The service nicely utilizes funcionality of a threadpool. Using the $post()$ method I create tasks which are pushed to the queue and later processed by threads from the threadpool.
 
 \newpage
-\section{Desing}
+\section{Design}
 
 The algorithm is based on Garland's simplification quadric error metric algorithm. The main difference is clustering and parallel consuming parts of a mesh with adaptive thresholding for each iteration. This approach guarantees global update and accumulation of quadrics for each iteration in such a way that planar surfaces are always deceminated first. The main goal of this work, is to transfer from global pool of vertices for a mesh to two separate pools, one for complex shapes and one for planar surfaces. A vertex pools are just a conceptual terms by which I mean the number of vertices which we want to remove to achieve our convergance criteria. However, to keep complex shapes, vertices from planar surfaces have to be removed as much as possible to maintain balance in pools. Therefore, outer loop of my algorithm, which increases the threshold level, is so crucial. The mesh reconstruction always creates a mesh with evenly distributed triangles. This assumption, drives my design of the algorithm. Complex shapes have high quardic error, if we appropriately manipulate the threshold we can achieve the transfer goal.
 
