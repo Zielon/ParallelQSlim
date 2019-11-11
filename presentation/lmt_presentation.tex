@@ -1,0 +1,73 @@
+\documentclass[
+	%sans,			% use sans-serif font
+	%serif,			% use serif-font
+	%mathsans,		% set mathtext to sans-serif
+	%mathserif,		% set mathtext to serif
+	%10pt,
+	10pt,
+	%12pt,
+	t		% add text at the top border of slide
+	%slidescentered,% center text on slide
+	%draft,			% compile as draft version
+	%handout,		% create handout file
+	%notes,			% include nodes in slides
+	%compress		% compress navigation bar
+]{beamer}
+
+
+\usetheme{lmtslides}
+\usepackage{eso-pic}
+\usepackage{graphicx}
+%\usepackage[pdftex]{color}
+\usepackage{times}
+\usepackage[latin1]{inputenc}
+%\usepackage[T1]{fontenc}
+\usepackage[amssymb]{SIunits}
+\usepackage{amsmath,amssymb}
+\usepackage{eurosym}
+\usepackage{booktabs}
+\usepackage{colortbl}
+\usepackage{url}
+\usepackage{animate}
+\usepackage{graphics}
+
+\graphicspath{{figures/}}
+
+% SET LANGUAGE HERE! (Babel is already included and setup by this call.)
+%\setlang{de}		% <- GERMAN
+\setlang{en}		% <- ENGLISH
+
+% MODIFY THESE ACCORDINGLY! ---
+\title{Parallel mesh simplification with adaptive thresholding based on quadric error metrics}
+\subtitle{Interdisciplinary project}
+\type{Sf} % (M/B/D/S)(f/m): (Master/Bachelor/Diplom/Studienarbeit)(final/midterm)
+\author{Wojciech Zielonka}
+\email{wojciech.zielonka@tum.de}
+\advisor{Prof. Dr.-Ing. Eckehard Steinbach}
+\emailAdvisor{eckehard.steinbach@tum.de}
+\date{\today}
+%------------------------------
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+
+\AddToShipoutPicture{\TitlePicture}
+\maketitle
+\ClearShipoutPicture
+\AddToShipoutPicture{\BackgroundPicture}
+
+\section{Iterations}
+\begin{frame}
+\frametitle{Iterations}
+\begin{center}
+\animategraphics[autoplay,loop]{1}{simply3/snapshot00_L}{3}{10}
+\end{center}
+\end{frame}
+
+\section{Vortragsfolien}
+\begin{frame}
+\frametitle{Vortragsfolien}
+\end{frame}
+
+\end{document}
