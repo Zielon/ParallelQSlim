@@ -1,15 +1,15 @@
 \chapter{Basic Simplification Algorithm}
 \thispagestyle{empty}% no page number in chapter title page
-In this section, I will present a basic algorithm for mesh simplification which is founded on serverl fundamental components: iterative vertex contraction, quadric error metric, mesh clustering and parallel strategy to consume those clusters. In this chapter I will elaborate foundations for the geometric error metric. In the next chapter I am going to introduce the extended version of this algorithm which additionaly uses color and normals for the error metric. Finally, in the forth chapter, I will describe the parallel approch with adaptive thresholding to sovle the problem.
+In this section, I will present a basic algorithm for mesh simplification which is founded on several fundamental components: iterative vertex contraction and quadric error metric. This part elaborates basics of the most popular method for mesh simplification created by Michael Garland.
 \numberwithin{equation}{section}
 \section{Design}
-The core of the algorithm is based on Michael Garland's work Quadric-Based Polygonal Surface Simplification \cite{garland99} where he suggests an algorithm capable of producing high-quality approximations of polygonal meshes. The main assumption is that the approximation need not to maintain the topology of the original surface and is a nicely balanced trade-off between quality and size. 
+The core of the algorithm is based on Michael Garland's work Quadric-Based Polygonal Surface Simplification \cite{garland99} where he suggests an algorithm capable of producing high-quality approximations of polygonal meshes. The main assumption is that the approximation need not to maintain the topology of the original surface and is a nicely balanced trade-off between quality and size.
 
-The goal of this work was to adopt this algorithm to a parallel framework with adaptive thresholding, capable of fast progresive mesh streaming \cite{yang01} for renderer engines in browsers. An example of such a renderer is Indoorviewer product created by NavVis. Depending on selected mesh resolution and level of details an appropriate mesh will be streamed to a browser. Therefore, the size and quality is crucial for the endpoint users to get maximal usability. Using the assumption that planar surfaces need much less trinagles to describe geometry we can get light and detailed meshes which are perfect for streaming purposes.
+The goal of this work was to adopt this algorithm to a parallel framework with adaptive thresholding, capable of fast progresive mesh streaming \cite{yang01} for renderer engines in browsers. An example of such a renderer is Indoorviewer product created by NavVis. Depending on selected mesh resolution and level of details an appropriate mesh will be streamed to a browser. Therefore, the size and quality is crucial for the endpoint users to get maximal usability. Using the assumption that planar surfaces need much less triangles to describe geometry, while preserving details at non-planar surface. We can get light and detailed meshes which are perfect for streaming purposes.
 \clearpage
 
 \section{Iterative Vertex Contraction}
-The simplification algorithm is based on several atomic operations. The most important of them is an edge contraction. Let me denote an edge as a pair of vertices $(\mathbf{v_i}, \mathbf{v_j})\rightarrow\bar{\mathbf{v}}$. The atomic operation of a contraction is then defined as:
+The simplification algorithm is based on several atomic operations. The most important of them is an edge contraction. Let me denote a pair of contraction as $(\mathbf{v_i}, \mathbf{v_j})\rightarrow\bar{\mathbf{v}}$. The atomic operation of a contraction is then defined as:
 
 \begin{enumerate}
 \item Move the vertices $\mathbf{v_i}$ and $\mathbf{v_j}$ to the position $\bar{\mathbf{v}}$
@@ -20,12 +20,10 @@ The simplification algorithm is based on several atomic operations. The most imp
 \begin{figure}[h!]
   \begin{center}
     \includegraphics[width=17cm]{edge_contraction}
-    \caption{Contraction of an edge \cite{garland99}.}
+    \caption{Contraction of an edge. Remove $\mathbf{v_j}$ and move remaining edges to $\mathbf{v_i}$ \cite{garland99}.}
     \label{fig:edge_contraction_ref}
   \end{center}
 \end{figure}
-
-In the parallel framework the crucial aspect is locking all vertices and faces for the current edge to prevent from multiple threads modify the same region. To achieve this, $tryLock()$ method was used. To perform a contraction we have to check if it is possible to lock the whole neighbourhood, in the other case, it means that already a different thread is manipulating a given region. In such a situation the contraction is stopped for the current thread.
 
 The algorithm is a greedy procedure driven by the cost of contraction \cite{cormen01}. It stops when the current threshold level is reached. To achieve simplification we apply a sequence of edge contraction. Where the sequence is created as follows \cite{garland97}:
 
@@ -41,18 +39,21 @@ The algorithm is a greedy procedure driven by the cost of contraction \cite{corm
 \end{enumerate}
 \end{enumerate}
 
-Each edge is associated with a cost of contraction which is basically the amount of error made during deletion of a given pair of vertices. This cost is a key in the minimum heap \cite{cormen01} which is iteratively $pop()$. In each main iteration (steps from 1 to 4) we contract edges up to the current adaptive threshold level. If a current edge's cost is bigger or equal than the acceptable error, the main iteration procedure is stopped and the remaining egdes in the heap are ignored. In a next iteration we rebuild the heap and the error level is slightly increased in such a way that perviously contracted regions are even more simplified. The error calculations are based on a hyperparameter $aggressiveness$ and a current iteration value:
+Each edge is associated with a cost of contraction which is basically the amount of error made during deletion of a given pair of vertices. This cost is a key in the minimum heap \cite{cormen01} which is iteratively $pop()$. In each main iteration (steps from 1 to 4) we contract edges up to the current adaptive threshold level. If a current edge's cost is bigger or equal than the acceptable error, the main iteration procedure is stopped and the remaining edges in the heap are ignored. In a next iteration we rebuild the heap and the error level is slightly increased in such a way that previously contracted regions are even more simplified. The error calculations are based on a hyperparameters $aggressiveness$ and a current iteration value:
 \begin{align}
 error(i)=0.000000001*(i+3)^a
+\label{error_formula}
 \end{align}
 where $i$ is the iteration and $a$ is the aggressiveness.
+
+The formula is inspired by a github implementation of Fast-Quadric-Mesh-Simplification, where the author introduced adaptive thresholding using \ref{error_formula}. The $aggressiveness$ has to be changed once the different error metric is used. The best results for gemoetry gives 3 and for the rest is 5.
 
 Rebulding heap captures the change of geometry made in a  contraction for the whole mesh. After one contraction we update only first order neighbours of a given vertex. Therefore, we need to rebuild heap to reflect the global change.
 
 \section{Assessing Cost of Contraction}
 In this section, I will elaborate how to measure the cost of contraction for an edge just for geometry attributes. Maintaining high level of details and faithful representation of the original mesh we should reflect the cost in the effect of changing geometry of the surface. Meaning, if the error is small the geometry changes insignificantly. An edge with a small error is a perfect candiate for removal.
 
-Because the metric is plane-based, first, let me define a standard representation of a plane as $\mathbf{n}^T\mathbf{v}+d=0$ where $\mathbf{n} = [a\;b\;c]^T$, $d$ is a scalar constant and $\mathbf{v} = [x\;y\;z]^T$. From this, we can formulate quadric error metric as following \cite{garland99}:
+Because the metric is plane-based, first, let me define a standard representation of a plane as $\mathbf{n}^T\mathbf{v}+d=0$ with normal  $\mathbf{n} = [a\;b\;c]^T$, $d$ is a scalar constant and $\mathbf{v} = [x\;y\;z]^T$ is a point in 3D space. From this, we can formulate quadric error metric as following \cite{garland99}:
 \begin{align}
 D^2(\mathbf{v}) = (\mathbf{n}^T\mathbf{v}+d)^2 = (ax + by + cz + d)^2
 \label{quadric_distance}
@@ -61,14 +62,14 @@ The error for the set of planes associated with the vertex $v$ is then defiend a
 \begin{align}
 \sum_{i} D_i^2(\mathbf{v}) = \sum_{i} (\mathbf{n_i}^T\mathbf{v}+d_i)^2
 \end{align}
-Each vertex has accumulated error metric value for surrounding faces  which represents maximum squared distance to the intersection of all planes spanned by each face.
+Each vertex has an accumulated error metric value for surrounding faces  which represents the maximum squared distance to the intersection of all planes spanned by each face.
 
-Figure~\ref{fig:measuring_contraction_ref} shows how finding an optimal point $\bar{\mathbf{v}}$ could look in practice in 2D. Vertices $\mathbf{v}_i, \mathbf{v}_j$ define set of planes $P_i = \{A,C\}$ and $P_j = \{B, C\}$. The error on each of those vertices equals $E_{plane}(v_i) = E_{plane}(v_j) = 0$ since they both lie on the lines span by thier sets. Let me define a new set which is a union of $ \bar{P} = P_i \cup P_j = \{ A,B,C \}$. Position of $\bar{\mathbf{v}}$ minimizes the sum of square distances the the lines in $\bar{P}$ \cite{garland99}.
+Figure~\ref{fig:measuring_contraction_ref} shows how removing a pair of contraction $(\mathbf{v}_i, \mathbf{v}_j)$ could look in practice in the 2D case. Vertices $\mathbf{v}_i, \mathbf{v}_j$ define set of lines $P_i = \{A,C\}$ and $P_j = \{B, C\}$. The error on each of those vertices equals $E_{plane}(v_i) = E_{plane}(v_j) = 0$ since they both lie on the lines span by thier sets. Let me define a new set which is a union of $ \bar{P} = P_i \cup P_j = \{ A,B,C \}$. Position of $\bar{\mathbf{v}}$ minimizes the sum of square distances the the lines in $\bar{P}$ \cite{garland99}.
 
 \begin{figure}[H]
   \begin{center}
     \includegraphics[width=15cm]{measuring_contraction}
-    \caption{Measuring contraction cost in 2D \cite{garland99}.}
+    \caption{Measuring contraction cost in 2D where $\bar{\mathbf{v}}$ is a global minimum of our optimization objective \cite{garland99}.}
     \label{fig:measuring_contraction_ref}
   \end{center}
 \end{figure}
@@ -83,7 +84,7 @@ D^2(\mathbf{v})&=(\mathbf{n}^T\mathbf{v}+d)^2\\
 	  &=(\mathbf{v}^T(\mathbf{n}\mathbf{n}^T)\mathbf{v}+2(d\mathbf{n})^T\mathbf{v}+d^2)
 	  \label{quadric_equation}
 \end{align}
-where $\mathbf{n}\mathbf{n}^T$ is the outer prodcut of
+where $\mathbf{n}\mathbf{n}^T$ is the outer prodcut of the face normal:
 \begin{align}
 \left[
 \begin{array}{rrrr}
@@ -100,7 +101,7 @@ Where $\mathbf{A}$ is a $3x3$ matrix, $\mathbf{b}$ is a 3-vector and c is a scal
 \begin{align}
 Q(\mathbf{v}) = \mathbf{v}^T\mathbf{A}\mathbf{v} + 2\mathbf{b}^T\mathbf{v} + c
 \end{align}
-Quadrics provide an intuitive addition operation which is component-wise: $Q_i(\mathbf{v}) + Q_j(\mathbf{v}) = (Q_i + Q_j)(\mathbf{v})$ where $Q_i(\mathbf{v}) + Q_j(\mathbf{v}) = (\mathbf{A_i} + \mathbf{A_j}, \mathbf{b_i} + \mathbf{b_j}, c_i + c_j)$. Using this fact we can easily define a single quadric $E_Q$ for the set of planes of a given vertex \cite{garland99} as sum over qudrics for each face:
+Quadrics provide an intuitive addition operation which is component-wise: $Q_i(\mathbf{v}) + Q_j(\mathbf{v}) = (Q_i + Q_j)(\mathbf{v})$ where $Q_i(\mathbf{v}) + Q_j(\mathbf{v}) = (\mathbf{A_i} + \mathbf{A_j}, \mathbf{b_i} + \mathbf{b_j}, c_i + c_j)$. Using this fact we can easily define a single quadric $E_Q$ for the set of planes of a given vertex \cite{garland99} as sum over quadrics for each face:
 \begin{align}
 E_Q(\mathbf{v}) = \sum_{i} D_i^2(\mathbf{v}) = \sum_{i} Q_i(\mathbf{v}) = Q(\mathbf{v})
 \end{align}
@@ -114,14 +115,14 @@ The value of $Q(\mathbf{\bar{v}})$ is a key in the min-heap. Tables~\ref{tab:app
 \centering
 \begin{tabular}{ |c|c| } 
  \hline
- Number of faces & Original simplification\\
+ Number of faces & Size in \% of the original mesh\\
  \hline
- 3642 faces & 94.756 \\ 
- 2228 faces & 96.791 \\ 
- 1842 faces & 97.347\\ 
- 1152 faces & 98.341\\ 
- 665 faces & 99.042\\ 
- 130 faces & 99.813\\
+ 3642 faces & 94.7\% \\ 
+ 2228 faces & 96.8\% \\ 
+ 1842 faces & 97.3\%\\ 
+ 1152 faces & 98.3\%\\ 
+ 665 faces & 99.0\%\\ 
+ 130 faces & 99.8\%\\
  \hline
 \end{tabular}
 \caption{Percentage of simplification of the original Stanford Bunny with 69351 faces.}
@@ -137,7 +138,7 @@ Table~\ref{tab:original_ref} shows the quality of progressive simplification. As
 	\begin{subfigure}{0.7\textwidth}\centering\includegraphics
 		[width=0.5\columnwidth]{original_70}\caption{Faces 18892 (30\%)}\label{original_70_ref}\end{subfigure}\\
 	\begin{subfigure}{0.7\textwidth}\centering\includegraphics
-		[width=0.5\columnwidth]{original_95}\caption{Faces 3642 (6\%)}\label{original_95_ref}\end{subfigure}\\
+		[width=0.5\columnwidth]{original_95}\caption{Faces 3642 (5\%)}\label{original_95_ref}\end{subfigure}\\
 	\end{tabular}
 	\caption{Quality of the simplification of the original mesh.}
   	\label{tab:original_ref}
@@ -205,6 +206,7 @@ Q(\mathbf{v}) &= \mathbf{v}^T\mathbf{A}\mathbf{v} + 2\mathbf{b}^T\mathbf{v} + c\
 Solving for $\nabla Q(\mathbf{v}) = 0$, the optimal position is defined:
 \begin{align}
 \mathbf{\bar{v}} = -\mathbf{A}^{-1}\mathbf{b}
+\label{v_bar}
 \end{align}
 and the error:
 \begin{align}
@@ -225,19 +227,24 @@ virtual bool optimize(Eigen::VectorXd &result) {
 \end{center}
 Eigen::FullPivLU is LU decomposition of a matrix with complete pivoting, and related features. This decomposition provides the generic approach to solving systems of linear equations, computing the rank, invertibility, inverse, kernel, and determinant \cite{eigenLU19}.
 
-In the case when a matrix is not invertible the following computations are performed \cite{garland99}:
+The standard routine is based on 3 basics checks \cite{garland99}:
 \begin{enumerate}
+\item Try to compute $\mathbf{\bar{v}}$ (\ref{v_bar})
 \item If $\mathbf{A}$ is singular, find the optimal position along the line segment $(\mathbf{v_i}, \mathbf{v_j})$.
 \item If this is not unique, select the better of $\mathbf{v_i}$ and $ \mathbf{v_j}$.
 \end{enumerate}
-In practice it is very rare that a matrix determinant is zero. Due to the limits of floating point precision. The optimal vertex placement will tend to create closely fitting approximations of the original mesh. Which at the end gives a better shaped triangles \cite{garland99}. The placement strategy for the pair of contraction $(\mathbf{v_i}, \mathbf{v_j})$ is to always move $\mathbf{v_j}$ to the position of $\mathbf{v_i}$. It eliminates a problem of storing delta of the new vertex position.
+In practice it is very rare that a matrix determinant is zero. Due to the limits of floating point precision. However, the function $isInvertible()$ determines which pivots should be considerd nonzero based on a certain threshold. A matrix with determinant close to zero will be considered as not a full-rank matrix \cite{strang88}. Consequently, step 2 or 3 has to be performed to find the optimal point.
+
+The optimal vertex placement will tend to create closely fitting approximations of the original mesh. Therefore, the resulting meshes are shaped in a way that triangles are more equilateral and their areas are more uniform. This method is the best choice for generating fixed approximations of an original \cite{garland99}. 
+
+Summarizing, the general placement strategy for the pair of contraction $(\mathbf{v_i}, \mathbf{v_j})$ is to always move $\mathbf{v_i}$ to $\mathbf{\bar{v}}$ and then $\mathbf{v_j}$ to the position of $\mathbf{v_i}$. It eliminates a problem of storing delta of the new vertex position.
 
 \newpage
 \section{Constraints}
 
-Simplification requiers several different constrains and checks to not introduce an error in the new vertex placement position. The quality of approximation is critical for producing simplified meshes. For instance, the borders of a mesh have to be treated as a special case.
+Simplification requires several different constrains and checks to not introduce an error in the new vertex placement position. The quality of approximation is critical for producing simplified meshes. For instance, the borders of a mesh have to be treated as a special case.
 
-There is a few options how we can solve the problem of borders. In my implementation, I used a version with adding the quadric error of a plane perpendicular to a given border edge. The perpendicular plane itself defines a boundary constraint. The other option is to do not touch border vertices. However, this option is problematic if we want to achieve a certain level of simplification. The number of border vertices can be even 15\% of the mesh. It means that this 15\% has to be transferd from the complex shapes which we would like to preserve to the simplification pool. Therefore, we sacrifice the quality of the mesh for the sake of preserving edges.
+There are a few options how we can solve the problem of borders. In my implementation, I used a version with adding the quadric error of a plane perpendicular to a given border edge. The perpendicular plane itself defines a boundary constraint. The other option is to not touch border vertices. However, this option is problematic if we want to achieve a certain level of simplification. The number of border vertices can be even 15\% of the mesh. It means that this 15\% has to be transfer from the complex shapes which we would like to preserve to the simplification pool. Therefore, we sacrifice the quality of the mesh for the sake of preserving edges.
 
 \begin{figure}[h!]
   \begin{center}
@@ -261,7 +268,15 @@ The other very important problem is vertex folding. A vertex placement can intro
   \end{center}
 \end{figure}
 
-Before performing a contraction the algorithm has to check if the new position is a valid one. For example Figure \ref{fig:fold} shows that the new position $\mathbf{\bar{v}}$ is degenerated and it folds one of the faces into the darkened area. In this case we have to stop contraction for this particular edge. To detect those kind of situations I examine the normals of the faces around $\mathbf{v_i}, \mathbf{v_j}$. If the face normal changes by some threshold level, the contraction is assumed to introduce flipping and is discarded.
+Before performing a contraction the algorithm has to check if the new position is a valid one. For example Figure \ref{fig:fold} shows that the new position $\mathbf{\bar{v}}$ is degenerated and it folds one of the faces into the darkened area. In this case we have to stop contraction for this particular edge. To detect those kind of situations I examine the normals of the faces around $\mathbf{v_i}, \mathbf{v_j}$. If the face normal changes by some threshold level, the contraction is assumed to introdguce flipping and is discarded. To determine if a flipping occured I perform two checks. First, I check if the area of newly created face. Meaning, I investigate the angle between edges, if it is bigger by some threshold.
+
+\begin{align}
+
+\mathbf{u} = \mathbf{p} - \mathbf{\bar{v}}
+\mathbf{v} = \mathbf{q} - \mathbf{\bar{v}}
+
+\frac{\mathbf{p} - \mathbf{\bar{v}}}{\norm{\mathbf{p} - \mathbf{\bar{v}}}}
+\end{align}
 
 \newpage
 \section{Summary of Garland's Algorithm}

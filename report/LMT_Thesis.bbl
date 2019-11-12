@@ -1,4 +1,5 @@
-\begin{thebibliography}{CLRS01}
+\newcommand{\etalchar}[1]{$^{#1}$}
+\begin{thebibliography}{LRC{\etalchar{+}}03}
 
 \bibitem[Amd67]{amdahl67}
 Gene~M. Amdahl.
@@ -32,6 +33,12 @@ Mark Grand.
 \newblock {\em Patterns in Java, Volume 1, A Catalog of Reusable Design
   Patterns Illustrated with UML}.
 \newblock Wiley, Second edition, 2002.
+
+\bibitem[LRC{\etalchar{+}}03]{lod03}
+David Luebke, Martin Reddy, Jonathan~D. Cohen, Amitabh Varshney, Benjamin
+  Watson, and Robert Huebner.
+\newblock {\em Level of Detail for 3D Graphics}.
+\newblock Morgan Kaufmann Publishers Inc., 2003.
 
 \bibitem[Str88]{strang88}
 Gilbert Strang.

@@ -2,7 +2,6 @@ This is BibTeX, Version 0.99d (TeX Live 2017/Debian)
 Capacity: max_strings=100000, hash_size=100000, hash_prime=85009
 The top-level auxiliary file: LMT_Thesis.aux
 A level-1 auxiliary file: StatementsEN.aux
-A level-1 auxiliary file: Kurzfassung.aux
 A level-1 auxiliary file: Abstract.aux
 A level-1 auxiliary file: Introduction.aux
 A level-1 auxiliary file: Body.aux
@@ -10,44 +9,44 @@ A level-1 auxiliary file: Conclusions.aux
 A level-1 auxiliary file: Appendix.aux
 The style file: alpha.bst
 Database file #1: Bibliography.bib
-You've used 10 entries,
+You've used 11 entries,
             2543 wiz_defined-function locations,
-            615 strings with 5855 characters,
-and the built_in function-call counts, 2898 in all, are:
-= -- 254
-> -- 114
+            619 strings with 6028 characters,
+and the built_in function-call counts, 3356 in all, are:
+= -- 291
+> -- 154
 < -- 8
-+ -- 34
-- -- 34
-* -- 151
-:= -- 500
-add.period$ -- 30
-call.type$ -- 10
-change.case$ -- 44
-chr.to.int$ -- 10
-cite$ -- 10
-duplicate$ -- 148
-empty$ -- 251
-format.name$ -- 50
-if$ -- 590
++ -- 49
+- -- 49
+* -- 189
+:= -- 584
+add.period$ -- 33
+call.type$ -- 11
+change.case$ -- 53
+chr.to.int$ -- 11
+cite$ -- 11
+duplicate$ -- 163
+empty$ -- 276
+format.name$ -- 65
+if$ -- 676
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 16
-newline$ -- 53
-num.names$ -- 30
-pop$ -- 92
+missing$ -- 18
+newline$ -- 59
+num.names$ -- 33
+pop$ -- 105
 preamble$ -- 1
-purify$ -- 64
+purify$ -- 75
 quote$ -- 0
-skip$ -- 104
+skip$ -- 113
 stack$ -- 0
-substring$ -- 70
-swap$ -- 10
+substring$ -- 77
+swap$ -- 11
 text.length$ -- 8
 text.prefix$ -- 6
 top$ -- 0
-type$ -- 48
+type$ -- 52
 warning$ -- 0
-while$ -- 22
-width$ -- 13
-write$ -- 122
+while$ -- 25
+width$ -- 14
+write$ -- 135
