@@ -462,7 +462,7 @@ The producer-consumer pattern is an optimal way to separate workload of processi
 
 Figure \ref{fig:uml} shows how such a process could look like. There are shown three main components; producer, synchronization object (the queue) and consumer. In the case when the buffer is either full or empty, waiting spin is used to hold execution till the moment when more tasks are available for a consumer.
 
-In this implementation a generalized version of the pattern is used, which assumes multiple producers and consumers operating on a single fixed buffer. The main idea to create a separate tasks, which later are consumed by active threads from the thread-pool. To create those tasks, clustering of the mesh is introduced.
+In this implementation a generalized version of the pattern is used, which assumes multiple producers and consumers operating on a single fixed buffer. The main idea is to create a separate tasks, which later are consumed by active threads from the thread-pool. To create those tasks, clustering of the mesh is introduced.
 
 \newpage
 \section{Producer Design}
