@@ -9,44 +9,46 @@ A level-1 auxiliary file: Conclusions.aux
 A level-1 auxiliary file: Appendix.aux
 The style file: alpha.bst
 Database file #1: Bibliography.bib
-You've used 11 entries,
+Warning--empty publisher in ropero17
+You've used 12 entries,
             2543 wiz_defined-function locations,
-            619 strings with 6028 characters,
-and the built_in function-call counts, 3356 in all, are:
-= -- 291
-> -- 154
+            623 strings with 6197 characters,
+and the built_in function-call counts, 3683 in all, are:
+= -- 319
+> -- 173
 < -- 8
-+ -- 49
-- -- 49
-* -- 189
-:= -- 584
-add.period$ -- 33
-call.type$ -- 11
-change.case$ -- 53
-chr.to.int$ -- 11
-cite$ -- 11
-duplicate$ -- 163
-empty$ -- 276
-format.name$ -- 65
-if$ -- 676
++ -- 55
+- -- 55
+* -- 210
+:= -- 640
+add.period$ -- 36
+call.type$ -- 12
+change.case$ -- 58
+chr.to.int$ -- 12
+cite$ -- 13
+duplicate$ -- 178
+empty$ -- 301
+format.name$ -- 72
+if$ -- 741
 int.to.chr$ -- 1
 int.to.str$ -- 0
-missing$ -- 18
-newline$ -- 59
-num.names$ -- 33
-pop$ -- 105
+missing$ -- 20
+newline$ -- 64
+num.names$ -- 36
+pop$ -- 115
 preamble$ -- 1
-purify$ -- 75
+purify$ -- 82
 quote$ -- 0
-skip$ -- 113
+skip$ -- 125
 stack$ -- 0
-substring$ -- 77
-swap$ -- 11
+substring$ -- 84
+swap$ -- 12
 text.length$ -- 8
 text.prefix$ -- 6
 top$ -- 0
-type$ -- 52
-warning$ -- 0
-while$ -- 25
-width$ -- 14
-write$ -- 135
+type$ -- 56
+warning$ -- 1
+while$ -- 28
+width$ -- 15
+write$ -- 146
+(There was 1 warning)

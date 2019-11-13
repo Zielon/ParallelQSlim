@@ -40,6 +40,12 @@ David Luebke, Martin Reddy, Jonathan~D. Cohen, Amitabh Varshney, Benjamin
 \newblock {\em Level of Detail for 3D Graphics}.
 \newblock Morgan Kaufmann Publishers Inc., 2003.
 
+\bibitem[RT17]{ropero17}
+Juan Ropero and Gabriel Tamura.
+\newblock {\em Characterizing the Impact of Context-Variables in Software
+  Performance Factors: a Domain-Specific Design Patterns Perspective}.
+\newblock 2017.
+
 \bibitem[Str88]{strang88}
 Gilbert Strang.
 \newblock {\em Linear Algebra and its Applications}.
