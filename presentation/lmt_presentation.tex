@@ -14,7 +14,6 @@
 	%compress		% compress navigation bar
 ]{beamer}
 
-
 \usetheme{lmtslides}
 \usepackage{eso-pic}
 %\usepackage[pdftex]{color}
@@ -22,7 +21,7 @@
 \usepackage[latin1]{inputenc}
 %\usepackage[T1]{fontenc}
 \usepackage[amssymb]{SIunits}
-\usepackage{amsmath,amssymb}
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
 \usepackage{eurosym}
 \usepackage{booktabs}
 \usepackage{colortbl}
@@ -35,6 +34,8 @@
 % SET LANGUAGE HERE! (Babel is already included and setup by this call.)
 %\setlang{de}		% <- GERMAN
 \setlang{en}		% <- ENGLISH
+
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 
 % MODIFY THESE ACCORDINGLY! ---
 \title{Parallel Mesh Simplification with Adaptive Thresholding Based on Quadric Error Metrics}
@@ -56,9 +57,27 @@
 \ClearShipoutPicture
 \AddToShipoutPicture{\BackgroundPicture}
 
-\section{Get from}
+\section{Short Introduction}
+\centering
 \begin{frame}
-\frametitle{How to get from this mesh?}
+\frametitle{Introduction}
+\begin{center}
+The project was completed in NavVis company under the internal supervising of Senior Software Engineer Michael Gerstmayr and was a part of research on mesh reconstruction using dense point clouds from laser scanned environments.
+\end{center}
+\end{frame}
+
+\section{Motivation}
+\centering
+\begin{frame}
+\frametitle{Motivation}
+\begin{center}
+The project elaborates a specific case of mesh simplification, where the focus is mostly on planar surfaces, like walls and floors, at the same time, keeping high level of details for complex shapes; plants, elements on desks in an office.
+\end{center}
+\end{frame}
+
+\section{Get From}
+\begin{frame}
+\frametitle{How to Get From This Mesh?}
 \begin{figure}[ht]
 	\centering
     \includegraphics[width=1\textwidth]{from}
@@ -67,7 +86,7 @@
 
 \section{To}
 \begin{frame}
-\frametitle{To this mesh?}
+\frametitle{To This Mesh?}
 \begin{figure}[ht]
 	\centering
     \includegraphics[width=1\textwidth]{to}
@@ -85,18 +104,18 @@
 \end{enumerate}
 \end{frame}
 
-\section{What is a decimation}
+\section{What is a Decimation}
 \begin{frame}
-\frametitle{What is a decimation?}
+\frametitle{What is a Decimation?}
 \begin{figure}[ht]
 \centering
 \includegraphics[width=1\textwidth]{edge_contraction}
 \end{figure}
 \end{frame}
 
-\section{How to find an edge}
+\section{How to Find an Edge}
 \begin{frame}
-\frametitle{How to select edges?}
+\frametitle{How to Select Edges?}
 \centering
 \begin{enumerate}
 \item Select a set of candidate vertex pairs $(\mathbf{v_i}, \mathbf{v_j})$.
@@ -132,22 +151,25 @@ Q(\mathbf{v}) &= D^2(\mathbf{v})
 \end{align}
 \end{frame}
 
-\section{Quadric accumulation}
+\section{Quadric Accumulation}
 \begin{frame}
-\frametitle{Quadric accumulation}
+\frametitle{Quadric Accumulation}
 \centering
 \begin{enumerate}
-\item Allocate a quadric $Q_i$ for each vertex $\mathbf{v_i}$.
-\item For each face compute a quadric $Q_f$. Add this quadric to the vertex quadrics $Q_i, Q_k, Q_l$ and optionally weight it appropriately.
+\item [2.] Allocate a quadric $Q_i$ for each vertex $\mathbf{v_i}$.
+\item [3.] For each face compute a quadric $Q_f$. Add this quadric to the vertex quadrics $Q_i, Q_k, Q_l$ and optionally weight it appropriately.
 \end{enumerate}
+\begin{align}
+E_Q(\mathbf{v}) = \sum_{i} D_i^2(\mathbf{v}) = \sum_{i} Q_i(\mathbf{v}) = Q(\mathbf{v})
+\end{align}
 \end{frame}
 
-\section{Create edges}
+\section{Create Edges}
 \begin{frame}
-\frametitle{Create edges}
+\frametitle{Create Edges}
 \centering
 \begin{enumerate}
-\item For each candidate pair $(\mathbf{v_i}, \mathbf{v_j})$:
+\item [4.] For each candidate pair $(\mathbf{v_i}, \mathbf{v_j})$:
 \begin{enumerate}
 \item Compute $Q = Q_i + Q_j$.
 \item Select a target position $\mathbf{\bar{v}}$.
@@ -155,14 +177,25 @@ Q(\mathbf{v}) &= D^2(\mathbf{v})
 \item Place pair in heap keys on cost $Q(\mathbf{\bar{v}})$
 \end{enumerate}
 \end{enumerate}
+
+\begin{align}
+Q(\mathbf{v}) &= \mathbf{v}^T\mathbf{A}\mathbf{v} + 2\mathbf{b}^T\mathbf{v} + c\\
+\nabla Q(\mathbf{v}) &= 2\mathbf{A}\mathbf{v} + 2 \mathbf{b}
+\end{align}
+Solving for $\nabla Q(\mathbf{v}) = 0$, the optimal position is defined:
+\begin{align}
+\mathbf{\bar{v}} = -\mathbf{A}^{-1}\mathbf{b}
+\label{v_bar}
+\end{align}
+
 \end{frame}
 
-\section{Heap iterations}
+\section{Heap Iterations}
 \begin{frame}
-\frametitle{Heap iterations}
+\frametitle{Heap Iterations}
 \centering
 \begin{enumerate}
-\item Repeat until the desired approximation is reached:
+\item [5.] Repeat until the desired approximation is reached:
 \begin{enumerate}
 \item Remove the pair $(\mathbf{v_i}, \mathbf{v_j})$ of least cost from the heap.
 \item Preform contraction $(\mathbf{v_i}, \mathbf{v_j})\rightarrow\bar{\mathbf{v}}$
@@ -174,24 +207,184 @@ Q(\mathbf{v}) &= D^2(\mathbf{v})
 
 \section{Extended version with color and normals}
 \begin{frame}
-\frametitle{Extended version with color and normals}
+\frametitle{Extended Version With Color and Normals}
 \centering
-
+\begin{center}
+To improve simplification more attributes are incorporated in the joint optimization. Using additionally, color and normals approximations are much closer to the desired goal.
+\begin{align}
+\mathbf{v} &= [x \ y \ z \ r \ g \ b]^T\\
+T &= (\mathbf{p}, \mathbf{q}, \mathbf{r})\\ 
+\mathbf{h} &= \mathbf{q} - \mathbf{p}\\
+\mathbf{k} &= \mathbf{r} - \mathbf{p}
+\end{align}
+\end{center}
 \end{frame}
 
-
-\section{Adaptive thresholding}
+\section{Plane}
 \begin{frame}
-\frametitle{Adaptive thresholding}
+\frametitle{Plane in $\mathbf{R}^n$}
 \centering
-
+\begin{align}
+\mathbf{e_1} &= \mathbf{h} / \norm{\mathbf{e_1}} \\
+\mathbf{e_2} &= \frac{\mathbf{k} - (\mathbf{e_1} \cdot \mathbf{k})\mathbf{e_1}}{\norm{\mathbf{k} - (\mathbf{e_1} \cdot \mathbf{k})\mathbf{e_1}}}
+\end{align}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.8\textwidth]{gram}
+\end{figure}
 \end{frame}
 
-\section{How make it faster}
+\section{Extended version parameters}
 \begin{frame}
-\frametitle{How to make it faster?}
+\frametitle{Number of Parameters}
 \centering
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1\textwidth]{params_table}
+\end{figure}
+\end{frame}
 
+\section{Results}
+\begin{frame}
+\frametitle{Results}
+\centering
+\begin{figure}[ht]
+\centering
+\includegraphics[width=10cm,height=6cm]{color_2}
+\end{figure}
+\end{frame}
+
+\section{Results}
+\begin{frame}
+\frametitle{Results}
+\centering
+\begin{figure}[ht]
+\centering
+\includegraphics[width=10cm,height=6cm]{color_3}
+\end{figure}
+\end{frame}
+
+\section{Results}
+\begin{frame}
+\frametitle{Results}
+\centering
+\begin{figure}[ht]
+\centering
+\includegraphics[width=10cm,height=6cm]{color_6}
+\end{figure}
+\end{frame}
+
+\section{Results}
+\begin{frame}
+\frametitle{Results}
+\centering
+\begin{figure}[ht]
+\centering
+\includegraphics[width=10cm,height=6cm]{desk}
+\end{figure}
+\end{frame}
+
+\section{Parallel Iterative Adaptive Thresholding}
+\begin{frame}
+\frametitle{Parallel Iterative Adaptive Thresholding}
+\centering
+\begin{enumerate}
+\item Smooth mesh using Taubin's algorithm (optional).
+\item Cluster the mesh:
+\begin{enumerate}
+\item Split the mesh according to number of selected clusters; for example 2x2x2=8.
+\item Add a task for each cluster to the queue.
+\end{enumerate}
+\item Wait for all threads from the thread-pool to finish processing simplification algorithm [QSlim] ran on all clusters. Each thread does:
+\begin{enumerate}
+\item Build the heap with edges.
+\item Decimate edges till reaching the threshold level.
+\end{enumerate}
+\item Update the mesh structure:
+\begin{enumerate}
+\item Remove faces flagged as invalid.
+\item Reset properties for each remaining face and vertex.
+\end{enumerate}
+\item Repeat from the second step till convergence.
+\end{enumerate}
+\end{frame}
+
+\section{Smoothing}
+\begin{frame}
+\frametitle{Taubin's algorithm}
+\centering
+\begin{enumerate}
+\item [1.] Smooth mesh using Taubin's algorithm (optional).
+\end{enumerate}
+Taubin Smoothing is a linear low-pass filter that removes high curvature variations and does not produce shrinkage.
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.8\textwidth]{convergance}
+\end{figure}
+\end{frame}
+
+\section{Clustering}
+\begin{frame}
+\frametitle{Mesh Clustering}
+\begin{enumerate}
+\item [2.] Cluster the mesh:
+\begin{enumerate}
+\item Split the mesh according to number of selected clusters; for example 2x2x2=8.
+\item Add a task for each cluster to the queue.
+\end{enumerate}
+\end{enumerate}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.8\textwidth]{clustering}
+\end{figure}
+\end{frame}
+
+\section{Producer Consumer}
+\begin{frame}
+\frametitle{Producer Consumer Design Pattern}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=0.8\textwidth]{producer_consumer}
+\end{figure}
+\end{frame}
+
+\section{Parallel speedup}
+\begin{frame}
+\centering
+\frametitle{Parallel speedup}
+The tests were performed on a machine with 32 GB of RAM and Intel i7-6700 CPU 3.40GHz with 8 physical cores on a mesh with 982624 faces and 517715 vertices. Four different setups were ran with the objective to achieve reduction level 85\% of the original mesh.
+\begin{table}[h!]
+\centering
+\begin{tabular}{ |c|c|c| } 
+ \hline
+ Number of clusters & Threads in the pool & Total time processing\\
+ \hline
+ 1 & 1 & 151.611s\\ 
+ 8 & 8 & 75.557s\\ 
+ 27 & 27 & 57.405s\\
+ 27 & 8 & 58.957s\\
+ \hline
+\end{tabular}
+\caption{4 different test setups.}
+\end{table}
+\end{frame}
+
+\section{Results}
+\begin{frame}
+\frametitle{Results}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1\textwidth]{chart}
+\end{figure}
+\end{frame}
+
+\section{Speedup per iteration}
+\begin{frame}
+\frametitle{Speedup per iteration}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1\textwidth]{chart2}
+\end{figure}
 \end{frame}
 
 \section{Iterations}
