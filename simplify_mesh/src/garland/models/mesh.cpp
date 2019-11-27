@@ -8,6 +8,31 @@ garland::Mesh::~Mesh() {
     vertices.clear();
 }
 
+std::shared_ptr<garland::Mesh> garland::Mesh::getCopy() {
+    auto mesh = std::make_shared<Mesh>();
+    auto references = std::map<int, int>();
+
+    int i = 0;
+    for(auto &pair : vertices){
+        auto vertex = pair.second;
+        references[vertex->getId()] = i;
+        mesh->insert(std::make_shared<Vertex>(vertex->getPosition(), vertex->getNormal(), vertex->getColor(), i));
+        i++;
+    }
+
+    i = 0;
+    for(auto& pair : faces){
+        auto face = pair.second;
+        mesh->insert(std::make_shared<Face>(
+                references[face->getVertex(0)],
+                references[face->getVertex(1)],
+                references[face->getVertex(2)], i));
+        i++;
+    }
+
+    return mesh;
+}
+
 garland::FaceRefsVector garland::Mesh::getFacesForVertex(VertexId vid) {
     auto result = std::vector<std::shared_ptr<garland::Face>>();
 
