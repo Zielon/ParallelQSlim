@@ -127,16 +127,41 @@
 \headcommand {\beamer@framepages {26}{26}}
 \headcommand {\beamer@sectionpages {26}{26}}
 \headcommand {\beamer@subsectionpages {26}{26}}
-\headcommand {\sectionentry {26}{Iterations}{27}{Iterations}{0}}
+\headcommand {\sectionentry {26}{Comparison to Commercially Available Products}{27}{Comparison to Commercially Available Products}{0}}
 \headcommand {\slideentry {26}{0}{1}{27/27}{}{0}}
 \headcommand {\beamer@framepages {27}{27}}
 \headcommand {\beamer@sectionpages {27}{27}}
 \headcommand {\beamer@subsectionpages {27}{27}}
-\headcommand {\sectionentry {27}{Vortragsfolien}{28}{Vortragsfolien}{0}}
+\headcommand {\sectionentry {27}{fast_collapse}{28}{fast_collapse}{0}}
 \headcommand {\slideentry {27}{0}{1}{28/28}{}{0}}
 \headcommand {\beamer@framepages {28}{28}}
-\headcommand {\beamer@partpages {1}{28}}
-\headcommand {\beamer@subsectionpages {28}{28}}
 \headcommand {\beamer@sectionpages {28}{28}}
-\headcommand {\beamer@documentpages {28}}
-\headcommand {\gdef \inserttotalframenumber {28}}
+\headcommand {\beamer@subsectionpages {28}{28}}
+\headcommand {\sectionentry {28}{open_mesh}{29}{open_mesh}{0}}
+\headcommand {\slideentry {28}{0}{1}{29/29}{}{0}}
+\headcommand {\beamer@framepages {29}{29}}
+\headcommand {\beamer@sectionpages {29}{29}}
+\headcommand {\beamer@subsectionpages {29}{29}}
+\headcommand {\sectionentry {29}{my_3}{30}{my_3}{0}}
+\headcommand {\slideentry {29}{0}{1}{30/30}{}{0}}
+\headcommand {\beamer@framepages {30}{30}}
+\headcommand {\beamer@sectionpages {30}{30}}
+\headcommand {\beamer@subsectionpages {30}{30}}
+\headcommand {\sectionentry {30}{my_9}{31}{my_9}{0}}
+\headcommand {\slideentry {30}{0}{1}{31/31}{}{0}}
+\headcommand {\beamer@framepages {31}{31}}
+\headcommand {\beamer@sectionpages {31}{31}}
+\headcommand {\beamer@subsectionpages {31}{31}}
+\headcommand {\sectionentry {31}{rapid_compact}{32}{rapid_compact}{0}}
+\headcommand {\slideentry {31}{0}{1}{32/32}{}{0}}
+\headcommand {\beamer@framepages {32}{32}}
+\headcommand {\beamer@sectionpages {32}{32}}
+\headcommand {\beamer@subsectionpages {32}{32}}
+\headcommand {\sectionentry {32}{Iterations}{33}{Iterations}{0}}
+\headcommand {\slideentry {32}{0}{1}{33/33}{}{0}}
+\headcommand {\beamer@framepages {33}{33}}
+\headcommand {\beamer@partpages {1}{33}}
+\headcommand {\beamer@subsectionpages {33}{33}}
+\headcommand {\beamer@sectionpages {33}{33}}
+\headcommand {\beamer@documentpages {33}}
+\headcommand {\gdef \inserttotalframenumber {33}}

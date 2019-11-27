@@ -160,7 +160,8 @@ Q(\mathbf{v}) &= D^2(\mathbf{v})
 \item [3.] For each face compute a quadric $Q_f$. Add this quadric to the vertex quadrics $Q_i, Q_k, Q_l$ and optionally weight it appropriately.
 \end{enumerate}
 \begin{align}
-E_Q(\mathbf{v}) = \sum_{i} D_i^2(\mathbf{v}) = \sum_{i} Q_i(\mathbf{v}) = Q(\mathbf{v})
+Q_i(\mathbf{v}) + Q_j(\mathbf{v}) &= (\mathbf{A_i} + \mathbf{A_j}, \mathbf{b_i} + \mathbf{b_j}, c_i + c_j)\\
+E_Q(\mathbf{v}) &= \sum_{i} D_i^2(\mathbf{v}) = \sum_{i} Q_i(\mathbf{v}) = Q(\mathbf{v})
 \end{align}
 \end{frame}
 
@@ -387,16 +388,63 @@ The tests were performed on a machine with 32 GB of RAM and Intel i7-6700 CPU 3.
 \end{figure}
 \end{frame}
 
-\section{Iterations}
+\section{Comparison to Commercially Available Products}
 \begin{frame}
-\begin{center}
-\animategraphics[autoplay,loop, width=10cm]{0.1}{snapshot}{1}{5}
-\end{center}
+\frametitle{Comparison to Commercially Available Products}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1\textwidth]{original}
+\end{figure}
 \end{frame}
 
-\section{Vortragsfolien}
+\section{fast_collapse}
 \begin{frame}
-\frametitle{Vortragsfolien}
+\frametitle{Fast Edge Collapse [Geometry]}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1\textwidth]{fast_collapse}
+\end{figure}
+\end{frame}
+
+\section{open_mesh}
+\begin{frame}
+\frametitle{OpenMesh [Geometry, Normals]}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1\textwidth]{open_mesh}
+\end{figure}
+\end{frame}
+
+\section{my_3}
+\begin{frame}
+\frametitle{Parallel QSlim [Geometry]}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1\textwidth]{my_3}
+\end{figure}
+\end{frame}
+
+\section{my_9}
+\begin{frame}
+\frametitle{Parallel QSlim [Geometry, Normals, Color]}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1\textwidth]{my_9}
+\end{figure}
+\end{frame}
+
+\section{rapid_compact}
+\begin{frame}
+\frametitle{RapidCompact [Geometry]}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1\textwidth]{rapid_compact}
+\end{figure}
+\end{frame}
+
+\section{Iterations}
+\begin{frame}{Each Iteration of the Algorithm}
+\animategraphics[loop,width=\linewidth]{0.1}{snapshot_}{1}{5}
 \end{frame}
 
 \end{document}
