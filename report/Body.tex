@@ -1,11 +1,11 @@
 \chapter{Basic Simplification Algorithm}
 \thispagestyle{empty}% no page number in chapter title page
-In this section, a basic algorithm will be presented for mesh simplification. The algorithm is founded on several fundamental components: iterative vertex contraction and quadric error metric. This part elaborates basics of one of the most popular methods for mesh simplification created by Michael Garland.
+In this section is presented a basic algorithm for mesh simplification. The algorithm is founded on several components: iterative vertex contraction and quadric error metric. This part elaborates basics of one of the most popular methods for mesh simplification created by Michael Garland.
 \numberwithin{equation}{section}
 \section{Design}
 The core of the algorithm is based on Michael Garland's work Quadric-Based Polygonal Surface Simplification \cite{garland99}, where he suggests an algorithm capable of producing high-quality approximations of polygonal meshes. The main assumption is that the approximation need not to maintain the topology of the original surface and is a nicely balanced trade-off between quality and size.
 
-The goal of this work was to adopt this algorithm to a parallel framework with adaptive thresholding, capable of fast progresive mesh streaming \cite{yang01} for renderer engines in browsers. An example of such a renderer is Indoorviewer product created by NavVis. Depending on selected mesh resolution and level of details an appropriate mesh will be streamed to a browser. Therefore, the size and quality is crucial for the endpoint users to get maximal usability. Using the assumption that planar surfaces need much less triangles to describe geometry, while preserving details at non-planar surface. Light and detailed meshes can be generated which are suitable for streaming purposes.
+The goal of this work was to adopt this algorithm to a parallel framework with adaptive thresholding, capable of fast progresive mesh streaming \cite{yang01} for renderer engines in browsers. An example of such a renderer is IndoorViewer product created by NavVis. Depending on selected mesh resolution and level of details an appropriate mesh will be streamed to a browser. Therefore, the size and quality is crucial for the endpoint users to get maximal usability. Using the assumption that planar surfaces need much less triangles to describe geometry, while preserving details at non-planar surface. Light and detailed meshes can be generated which are suitable for streaming purposes.
 \clearpage
 
 \section{Iterative Vertex Contraction}
@@ -51,7 +51,7 @@ The formula \ref{error_formula} is inspired by a Github implementation of Fast-Q
 Rebuilding heap captures the change of geometry made in a contraction for the whole mesh. After one contraction we update only first order neighbors of a given vertex. Therefore, we need to rebuild heap to reflect the global change.
 
 \section{Assessing Cost of Contraction}
-In this section, the way how to measure the cost of contraction for an edge will be elaborated. For simplicity, the analysis is made just for geometry attributes. Maintaining high level of details and faithful representation of the original mesh, the cost should be reflected in the effect of changing geometry of the surface. Meaning, if the error is small, the geometry changes insignificantly. An edge with a small error is a good candidate for removal.
+This section elaborates the way how to measure the cost of contraction for an edge. For simplicity, the analysis is made just for geometry attributes. Maintaining high level of details and faithful representation of the original mesh, the cost should be reflected in the effect of changing geometry of the surface. Meaning, if the error is small, the geometry changes insignificantly. An edge with a small error is a good candidate for removal.
 
 Because the metric is plane-based, the standard representation of a plane is defined as $\mathbf{n}^T\mathbf{v}+d=0$ with normal  $\mathbf{n} = [a\;b\;c]^T$, $d$ is a scalar constant and $\mathbf{v} = [x\;y\;z]^T$ is a point in $3D$ space. From this, the quadric error metric can formulate as following \cite{garland99}:
 \begin{align}
@@ -291,7 +291,7 @@ To correctly investigate flipping, the whole silhouette of neighbors of a given 
 \newpage
 \section{Summary of Garland's Algorithm}
 
-Below, complete algorithm in 5 steps is presented. The next chapter elaborates how this concept is incorporated in multi-threaded approach.
+Below, the complete algorithm in 5 steps is presented. The next chapter elaborates how this concept is incorporated in multi-threaded approach.
 
 Algorithm \cite{garland99}:
 
@@ -349,7 +349,7 @@ $\mathbf{e_1}, \mathbf{e_2}$ are unit-length vectors which form a local coordina
   \end{center}
 \end{figure}
 
-Now, the distance from an arbitrary point $\mathbf{v}\in\mathbf{R}^n$ to the plane created by the face $T$ will be presented. The squared distance of the vector $\mathbf{u} = \mathbf{p} - \mathbf{v}$ is defined as \cite{garland99}
+Now, the distance from an arbitrary point $\mathbf{v}\in\mathbf{R}^n$ to the plane created by the face $T$ will be presented. The squared distance of the vector $\mathbf{u} = \mathbf{p} - \mathbf{v}$ is defined as \cite{garland99}:
 
 \begin{align}
 \norm{\mathbf{u}}^2 = \mathbf{u}^T\mathbf{u} = (\mathbf{u}^T\mathbf{e_1})^2 + ... +  (\mathbf{u}^T\mathbf{e_n})^2
@@ -450,7 +450,7 @@ As it can be seen in the Table \ref{tab:desk}, complex shapes like plants or a s
 
 \chapter{Parallel Simplification Algorithm}
 
-In this chapter, the approach to design a parallel version of Garland's simplification algorithm is introduced. First, the Producer-Consumer design pattern with libraries and the implementation ideas making it thread-safe are described. Next, the analysis of the speedup and potential problems which can arose during an execution are shown. Finally, summary of the approach and comparison to different algorithms is given.
+This chapter introduces the approach to design a parallel version of Garland's simplification algorithm. First, the Producer-Consumer design pattern with libraries and the implementation ideas making it thread-safe are described. Next, the analysis of the speedup and potential problems which can arose during an execution are shown. Finally, summary of the approach and comparison to different algorithms is given.
 
 \section{Producer Consumer Pattern}
 
@@ -464,7 +464,7 @@ The producer-consumer pattern is an optimal way to separate workload of processi
   \end{center}
 \end{figure}
 
-Figure \ref{fig:uml} shows how such a process could look like. There are shown three main components; producer, synchronization object (the queue) and consumer. In the case when the buffer is either full or empty, waiting spin\footnote{A procedure to constantly check if the queue has new tasks to process. This is a common technique used in parallel programming.} is used to hold execution till the moment when more tasks are available for a consumer.
+Figure \ref{fig:uml} shows how such a process could look like. Three main components are shown; producer, synchronization object (the queue) and consumer. In the case when the buffer is either full or empty, waiting spin\footnote{A procedure to constantly check if the queue has new tasks to process. This is a common technique used in parallel programming.} is used to hold execution till the moment when more tasks are available for a consumer.
 
 In this implementation a generalized version of the pattern is used, which assumes multiple producers and consumers operating on a single fixed buffer. The main idea is to create a separate tasks, which later are consumed by active threads from the thread-pool\footnote{A thread pool is a group of pre-instantiated, idle threads which stand ready to be given work, in this case simplification tasks from the queue.}. To create those tasks, clustering of the mesh is introduced.
 
@@ -533,7 +533,7 @@ To improve time of the simplification convergence, aggressiveness can be always 
 \newpage
 \section{Resutls}
 
-In this section, results of multi-threaded experiments of the algorithm are elaborated. Additionally, the time investigation of each execution in multiple scenarios is shown. The tests were performed on a machine with 32 GB of RAM and Intel i7-6700 CPU 3.40GHz with 8 physical cores on a mesh with 982624 faces and 517715 vertices. Four different setups were ran with the objective to achieve reduction level 85\% of the original mesh:
+This section elaborates results of multi-threaded experiments of the algorithm. Additionally, the time investigation of each execution in multiple scenarios is shown. The tests were performed on a machine with 32 GB of RAM and Intel i7-6700 CPU 3.40GHz with 8 physical cores on a mesh with 982624 faces and 517715 vertices. Four different setups were ran with the objective to achieve reduction level 85\% of the original mesh:
 
 \begin{table}[h!]
 \centering
