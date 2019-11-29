@@ -2,7 +2,7 @@
 \thispagestyle{empty}% no page number in chapter title page
 In this section is presented a basic algorithm for mesh simplification. The algorithm is founded on several components: iterative vertex contraction and quadric error metric. This part elaborates basics of one of the most popular methods for mesh simplification created by Michael Garland.
 \numberwithin{equation}{section}
-\section{Design}
+\section{Motivation}
 The core of the algorithm is based on Michael Garland's work Quadric-Based Polygonal Surface Simplification \cite{garland99}, where he suggests an algorithm capable of producing high-quality approximations of polygonal meshes. The main assumption is that the approximation need not to maintain the topology of the original surface and is a nicely balanced trade-off between quality and size.
 
 The goal of this work was to adopt this algorithm to a parallel framework with adaptive thresholding, capable of fast progresive mesh streaming \cite{yang01} for renderer engines in browsers. An example of such a renderer is IndoorViewer product created by NavVis. Depending on selected mesh resolution and level of details an appropriate mesh will be streamed to a browser. Therefore, the size and quality is crucial for the endpoint users to get maximal usability. Using the assumption that planar surfaces need much less triangles to describe geometry, while preserving details at non-planar surface. Light and detailed meshes can be generated which are suitable for streaming purposes.
@@ -19,7 +19,7 @@ The simplification algorithm is based on several atomic operations. The most imp
 
 \begin{figure}[h!]
   \begin{center}
-    \includegraphics[width=17cm]{edge_contraction}
+    \includegraphics[width=14cm]{edge_contraction}
     \caption{Contraction of an edge. Remove $\mathbf{v_j}$ and move remaining edges to $\mathbf{v_i}$ \cite{garland99}.}
     \label{fig:edge_contraction_ref}
   \end{center}
@@ -46,7 +46,7 @@ error(i)=0.000000001*(i+3)^a
 \end{align}
 where $i$ is the iteration and $a$ is the aggressiveness.
 
-The formula \ref{error_formula} is inspired by a Github implementation of Fast-Quadric-Mesh-Simplification, where the author introduced adaptive thresholding using \ref{error_formula}. The $aggressiveness$ has to be changed once the different error metric is used. The best results for geometry gives value 3 and for the rest of attributes 5 is used.
+The formula \ref{error_formula} is inspired by a Github implementation of Fast-Quadric-Mesh-Simplification, where the author introduced adaptive thresholding using \ref{error_formula}. The $aggressiveness$ has to be changed once the different attributes for error metric are used. The best results for geometry gives value $a=3$ and for the rest of attributes $a=5$ is used.
 
 Rebuilding heap captures the change of geometry made in a contraction for the whole mesh. After one contraction we update only first order neighbors of a given vertex. Therefore, we need to rebuild heap to reflect the global change.
 
@@ -69,7 +69,7 @@ Figure~\ref{fig:measuring_contraction_ref} shows how removing a pair of contract
 \begin{figure}[H]
   \begin{center}
     \includegraphics[width=15cm]{measuring_contraction}
-    \caption{Measuring contraction cost in 2D where $\bar{\mathbf{v}}$ is a global minimum of our optimization objective \cite{garland99}.}
+    \caption{Measuring contraction cost in 2D where $\bar{\mathbf{v}}$ is a global minimum of our optimization objective. The dotted circles represent iso-lines of the funciton error \cite{garland99}.}
     \label{fig:measuring_contraction_ref}
   \end{center}
 \end{figure}
@@ -198,7 +198,7 @@ Table~\ref{tab:original_ref} shows the quality of progressive simplification. 70
 \newpage
 \section{Vertex Placement}
 
-To perform the contraction of an edge $(\mathbf{v_i}, \mathbf{v_j})\rightarrow\bar{\mathbf{v}}$ the calculations of a new position $\mathbf{\bar{v}}$, which is called the target, has to be done. The optimal placement strategy, therefore, is to find a point for which $Q(\mathbf{\bar{v}})$ is minimal. Fortunately, since, $Q(\mathbf{\bar{v}})$ is quadratic we are guaranteed to find an unique minimizer which is a global minimum.
+To perform the contraction of an edge $(\mathbf{v_i}, \mathbf{v_j})\rightarrow\bar{\mathbf{v}}$ the calculations of a new position $\mathbf{\bar{v}}$, which is called the target, has to be done. The optimal placement strategy, therefore, is to find a point for which $Q(\mathbf{\bar{v}})$ is minimal. Since, $Q(\mathbf{\bar{v}})$ is quadratic it is guaranteed to find an unique minimizer which is a global minimum.
 \begin{align}
 Q(\mathbf{v}) &= \mathbf{v}^T\mathbf{A}\mathbf{v} + 2\mathbf{b}^T\mathbf{v} + c\\
 \nabla Q(\mathbf{v}) &= 2\mathbf{A}\mathbf{v} + 2 \mathbf{b}
@@ -230,10 +230,10 @@ Eigen::FullPivLU is LU decomposition of a matrix with complete pivoting, and rel
 The standard routine is based on 3 basics checks \cite{garland99}:
 \begin{enumerate}
 \item Try to compute $\mathbf{\bar{v}}$ (\ref{v_bar})
-\item If $\mathbf{A}$ is singular, find the optimal position along the line segment $(\mathbf{v_i}, \mathbf{v_j})$.
+\item If $\mathbf{A}$ is singular, find the optimal position along the line segment $(\mathbf{v_i}, \mathbf{v_j})$, by checking 3 points for the minimum error $[\mathbf{v_i}, \mathbf{v_j}, (\mathbf{v_j} - \mathbf{v_i}) / 2]$.
 \item If this is not unique, select the better of $\mathbf{v_i}$ and $ \mathbf{v_j}$.
 \end{enumerate}
-In practice it is very rare that a matrix determinant is zero. Due to the limits of floating point precision. However, the function $isInvertible()$ determines which pivots should be considerd nonzero, based on a certain threshold. A matrix with determinant close to zero will be considered as not a full-rank matrix \cite{strang88}. Consequently, step 2 or 3 has to be performed to find the optimal point.
+In practice it is very rare that a matrix determinant is zero. Due to the limits of floating point precision. However, the function $isInvertible()$ determines which pivots should be considerd nonzero, based on a certain threshold defined in the Eigen::FullPivLU implementation. A matrix with determinant close to zero will be considered as not a full-rank matrix \cite{strang88}. Consequently, step 2 or 3 has to be performed to find the optimal point.
 
 The optimal vertex placement will tend to create closely fitting approximations of the original mesh. Therefore, the resulting meshes are shaped in a way that triangles are more equilateral and their areas are more uniform. This method is the best choice for generating fixed approximations of an original \cite{garland99}. 
 
@@ -242,9 +242,9 @@ Summarizing, the general placement strategy for the pair of contraction $(\mathb
 \newpage
 \section{Constraints}
 
-Simplification requires several different constrains and checks to not introduce an error in the new vertex placement position. The quality of approximation is critical for producing simplified meshes. For instance, the borders of a mesh have to be treated as a special case.
+Simplification requires several different constrains and checks to not introduce a topology error in the new vertex placement position. The quality of approximation is critical for producing simplified meshes. For instance, the borders of a mesh have to be treated as a special case.
 
-There are a few options how we can solve the problem of borders. This implementation uses a version with adding the quadric error of a plane perpendicular to a given border edge. The perpendicular plane itself defines a boundary constraint. The other option is to not touch border vertices. However, this option is problematic if a certain level of simplification has to be achieved. The number of border vertices can be even 15\% of the mesh. It means that this 15\% has to be transfer from the complex shapes which we would like to preserve to the simplification pool. Therefore, the quality of the mesh is sacrificed  for the sake of preserving edges.
+There are a few options the problem of borders can solve. This implementation uses a version with adding the quadric error of a plane perpendicular to a given border edge. The perpendicular plane itself defines a boundary constraint. The other option is to not touch border vertices. However, this option is problematic if a certain level of simplification has to be achieved. The number of border vertices can be even 15\% of the mesh. It means that this 15\% has to be transfered from the complex shapes which we would like to preserve to the simplification pool. Therefore, the quality of the mesh is sacrificed  for the sake of preserving edges.
 
 \begin{figure}[h!]
   \begin{center}
@@ -254,9 +254,9 @@ There are a few options how we can solve the problem of borders. This implementa
   \end{center}
 \end{figure}
 
-The perpendicular plane constraint is very convenient in many aspects. For instance, it requires only to calculate the quadric error and add this error to the initial quadric error of each vertex on the boundary. It can be easily done in the initialization step when the heap is built. After each main iteration, the vertices are flagged if they lay on the border. Once the perpendicular error planes are accumulated in the vertices the algorithm continues the regular routine.
+The perpendicular plane constraint is very convenient in many aspects. For instance, it requires only to calculate the quadric error and add this error to the initial quadric error of each vertex on the boundary. It can be done in the initialization step when the heap is built. After each main iteration, the vertices are flagged if they lay on the border. Once the perpendicular error planes are accumulated in the vertices the algorithm continues the regular routine.
 
-The perpendicular plane constraint can be additionally weight by an arbitrary constant factor. This implementation do not use the factor multiplication because of the adaptive thresholding, which ignores all edges above the current threshold level. In this version of the algorithm, the edges are consumed as soon as possible to reduce the simplification pool.
+The perpendicular plane constraint can be additionally weighted by an arbitrary constant factor. This implementation do not use the factor multiplication because of the adaptive thresholding, which ignores all edges above the current threshold level. In this version of the algorithm, the edges are consumed as soon as possible to reduce the simplification pool.
 \newpage
 The other very important problem is vertex folding. A vertex placement can introduce a new position for a vertex which folds the neighborhood and produces degeneracies into the mesh.
 
@@ -270,15 +270,33 @@ The other very important problem is vertex folding. A vertex placement can intro
 
 Before performing a contraction, the algorithm has to check, if the new position is a valid one. For example, Figure \ref{fig:fold} shows the degenerated new position of $\mathbf{\bar{v}}$ which folds one of the faces into the darkened area. In this case, the contraction is stopped for this particular edge. To detect those kind of situations, the normals of faces around $\mathbf{v_i}, \mathbf{v_j}$ are examined. If the face normal changes by some threshold level, the contraction is assumed to introduced flipping and is discarded. 
 
-To determine if a flipping occurred, the two checks are preformed. First, checking if the area of newly created face is sufficient. Meaning, investigate the angle between edges. If it is bigger than some threshold, edges are almost co-linear. If a triangle is defined as $T = (\mathbf{p}, \mathbf{q}, \mathbf{r})$ then:
+To determine if a flipping occurred, two checks are preformed. First, checking if the area of newly created face is sufficient. Meaning, investigate the angle between edges. If it is bigger than some threshold, edges are almost co-linear. If a triangle is defined as $T = (\mathbf{p}, \mathbf{q}, \mathbf{r})$ then:
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=11cm]{triangle}
+    \caption{Triangle $T = (\mathbf{p}, \mathbf{q}, \mathbf{r})$.}
+    \label{fig:gram}
+  \end{center}
+\end{figure}
+
 \begin{align}
 \mathbf{u} &= \frac{\mathbf{r} - \mathbf{\bar{v}}}{\norm{\mathbf{r} - \mathbf{\bar{v}}}}\\
 \mathbf{v} &= \frac{\mathbf{q} - \mathbf{\bar{v}}}{\norm{\mathbf{q} - \mathbf{\bar{v}}}}\\
 t &= |\mathbf{u} \cdot \mathbf{v}|
 \end{align}
 where $\mathbf{u}$ and $\mathbf{v}$ are unit vectors and $\mathbf{\bar{v}}$ is the new optimal position. Variable $t$ caries the notion of angle between two vectors, if $t$ is bigger than $0.999$ the flipping was introduced and two new edges are very close to be co-linear.
+
+\begin{figure}[H]
+  \begin{center}
+    \includegraphics[width=11cm]{triangle_angle}
+    \caption{A new triangle $T = (\mathbf{q}, \mathbf{r}, \mathbf{\bar{v}})$  where $t$ is the angle used to check the co-linearity constraint.}
+    \label{fig:gram}
+  \end{center}
+\end{figure}
+
 \newpage
-The second check investigates normals. Using previously defined vectors $\mathbf{u}$ and $\mathbf{v}$ and triangle $T$ with its normal as $\mathbf{n}_T$ the definition is as follows:
+The second check investigates normals Figure \ref{fig:border_constraint}. Using previously defined vectors $\mathbf{u}$ and $\mathbf{v}$ and triangle $T$ with its normal as $\mathbf{n}_T$ the definition is as follows:
 \begin{align}
 \mathbf{n} &= \frac{ \mathbf{u} \times \mathbf{v}}{\norm{\mathbf{u} \times \mathbf{v}}}\\
 c &= \mathbf{n} \cdot \mathbf{n}_T
@@ -319,10 +337,10 @@ The algorithm above is the main core of the implementation. Every thread will pe
 
 \chapter{Extended Simplification Algorithm}
 
-The previous implementation includes only geometric error. In this chapter more attributes to improve simplification are incorporated. Using additionally color and normals, the decimation of planar surfaces can be easier achieved and gives better results. However, in the noisy environment of color (which is usually the case in scans), gradient guided simplification may produce poor results.
+The previous implementation includes only geometric error. In this chapter more attributes to improve simplification are incorporated. Using additionally color and normals, the decimation of planar surfaces can be easier achieved and gives better results. However, in the noisy environment of color (which is usually the case in scans), gradient guided simplification may affect the results.
 
 \section{Design}
-In this section, the main assumption is that each vertex is additionally associated with color $\mathbf{c} = [r \ g \ b]^T$ and normal $\mathbf{n} = [nx \ ny \ nz]^T$. For the sake of simplicity, lets consider an example with geometry and color only. Assume that each vertex is attributed with $\mathbf{v} = [x \ y \ z \ r \ g \ b]^T$. Figure~\ref{fig:hexagon} shows an example of a mesh like that. A triangle is defined as $T = (\mathbf{p}, \mathbf{q}, \mathbf{r})$ with edges $\mathbf{h} = \mathbf{q} - \mathbf{p}$ and $\mathbf{k} = \mathbf{r} - \mathbf{p}$. Now, because the problem is more that 3 dimensional, a different method to calucalte orthogonal vectors to the plane defined by the face is used. Simply calculating a corss product of two vectors will not work. Gram-Schmidt orthogonalization method \cite{strang88} is used to solve this problem.
+In this section, the main assumption is that each vertex is additionally associated with color $\mathbf{c} = [r \ g \ b]^T$ and normal $\mathbf{n} = [nx \ ny \ nz]^T$. For the sake of simplicity, lets consider an example with geometry and color only. Assume that each vertex is attributed with $\mathbf{v} = [x \ y \ z \ r \ g \ b]^T$. Figure~\ref{fig:hexagon} shows an example of a mesh like that. A triangle is defined as $T = (\mathbf{p}, \mathbf{q}, \mathbf{r})$ with edges $\mathbf{h} = \mathbf{q} - \mathbf{p}$ and $\mathbf{k} = \mathbf{r} - \mathbf{p}$. Since the input vector for the optimization are more then 3 dimensional, a different method to calucalte orthogonal vectors to the plane defined by the face is used. Simply calculating a cross product of two vectors will not work. Gram-Schmidt vectors orthogonalization method solves this problem \cite{strang88}.
 
 \begin{figure}[H]
   \begin{center}
@@ -335,11 +353,11 @@ In this section, the main assumption is that each vertex is additionally associa
 Therefore, two orthogonal to each other vectors $\mathbf{e_1}, \mathbf{e_2}$ are defined as:
 
 \begin{align}
-\mathbf{e_1} &= \mathbf{h} / \norm{\mathbf{e_1}} \\
+\mathbf{e_1} &= \mathbf{h} / \norm{\mathbf{h}} \\
 \mathbf{e_2} &= \frac{\mathbf{k} - (\mathbf{e_1} \cdot \mathbf{k})\mathbf{e_1}}{\norm{\mathbf{k} - (\mathbf{e_1} \cdot \mathbf{k})\mathbf{e_1}}}
 \end{align}
 
-$\mathbf{e_1}, \mathbf{e_2}$ are unit-length vectors which form a local coordinate system with $\mathbf{p}$ as the origin. Those vectors describe a plane like object in $R^6$.
+$\mathbf{e_1}, \mathbf{e_2}$ are unit-length vectors which form a local coordinate system with $\mathbf{p}$ as the origin. Those vectors describe a plane like object in $\mathbb{R}^6$.
 
 \begin{figure}[H]
   \begin{center}
@@ -349,7 +367,7 @@ $\mathbf{e_1}, \mathbf{e_2}$ are unit-length vectors which form a local coordina
   \end{center}
 \end{figure}
 
-Now, the distance from an arbitrary point $\mathbf{v}\in\mathbf{R}^n$ to the plane created by the face $T$ will be presented. The squared distance of the vector $\mathbf{u} = \mathbf{p} - \mathbf{v}$ is defined as \cite{garland99}:
+Now, the distance from an arbitrary point $\mathbf{v}\in\mathbb{R}^n$ to the plane created by the face $T$ will be presented. The squared distance of the vector $\mathbf{u} = \mathbf{p} - \mathbf{v}$ is defined as \cite{garland99}:
 
 \begin{align}
 \norm{\mathbf{u}}^2 = \mathbf{u}^T\mathbf{u} = (\mathbf{u}^T\mathbf{e_1})^2 + ... +  (\mathbf{u}^T\mathbf{e_n})^2
@@ -374,6 +392,8 @@ The quadric metric is defined as $Q(\mathbf{v}) = \mathbf{v}^T\mathbf{A}\mathbf{
 \mathbf{b} &= (\mathbf{p} \cdot \mathbf{e_1})\mathbf{e_1} + (\mathbf{p} \cdot \mathbf{e_2})\mathbf{e_2} - \mathbf{p}\\ 
 \mathbf{c} &= \mathbf{p} \cdot \mathbf{p} - (\mathbf{p} \cdot \mathbf{e_1})^2 - (\mathbf{p} \cdot \mathbf{e_2})^2 
 \end{align}
+
+For more details please refer to Michael Garland's Quadric-Based Polygonal Surface Simplification.
 
 The matrix $\mathbf{A}$ from \ref{fig:hexagon} is then:
 
@@ -401,11 +421,11 @@ Building the quadric and finding the optimal position is exactly the same like i
 
 \section{Results}
 
-Table \ref{tab:color_simplification} shows the results of using color and geometry metric error. It can be easily noticed that the simplification follows the color pattern. In some cases it is a desired features, however, the gradient can introduce noise.
-
-In the case of $3D$ scanning gives vertices with several attributes; for instance color, normal and geometry. Unfortunately, the color introduces quite substantial error. If the color gradient was constant in most of the places, the whole simplification would hugely benefit from it. However, not only a camera introduces an error, but also a SLAM algorithm. Therefore, either normals, color, geometry are incorporated all together or used separately.
-
 As it can be seen in the Table \ref{tab:desk}, complex shapes like plants or a small fan in front of the monitor preserve their initial complexity. However, flat surfaces like the desk or the monitor are significantly simplified. Therefore, the amount of removable faces, to achieve a particular simplification level, was transfered from the complex shapes pool to the flat surface pool. Complex shapes will be simplified only in the case when planar surfaces are as simply as possible and removal is not longer available.
+
+Table \ref{tab:color_simplification} shows the results of using color and geometry metric error. It can be easily noticed that the simplification follows the color pattern. In some cases it is a desired features, however, since the color distribution on planar surfaces is typically non-uniform, the resulting color gradients might have undesired impact on the final simplification result.
+
+If the color gradient was constant in most of the places, the whole simplification would hugely benefit from it. However, not only a camera introduces an error, in the case of $3D$ datasets captured by mobile lasers scanners like the NavVis $M6$, error sources as calibration and SLAM need to be considered when choosing the right attributes for the simplification. Therefore, either normals, color, geometry are incorporated all together or used separately.
 
 \begin{center}
   	\begin{table}[H]
@@ -454,7 +474,7 @@ This chapter introduces the approach to design a parallel version of Garland's s
 
 \section{Producer Consumer Pattern}
 
-The producer-consumer pattern is an optimal way to separate workload of processing data from the work to produce them. In the other words, it divides the problem into two major components, connected usually by a queue. This is a classic example of a multi-process synchronization problem. The process separation gives clear view at the problem and tasks. A producer is placing items in a queue, and a consumer removes each task from the queue and processes the data. This decoupling means that two components are completely independent \cite{grand02}. In the case when the queue is full, locking procedure is used to wait for consumers to process tasks.
+The producer-consumer pattern is an optimal way to distribute workload of processing data to worker threads which process the data. In other words, it divides the problem into two major components, connected usually by a queue. This is a classic example of a multi-process synchronization problem. The process separation gives clear view at the problem and tasks. A producer is placing items in a queue, and a consumer removes each task from the queue and processes the data. This decoupling means that two components are completely independent \cite{grand02}. In the case when the queue is full, locking procedure is used to wait for consumers to process tasks.
 
 \begin{figure}[H]
   \begin{center}
@@ -466,7 +486,7 @@ The producer-consumer pattern is an optimal way to separate workload of processi
 
 Figure \ref{fig:uml} shows how such a process could look like. Three main components are shown; producer, synchronization object (the queue) and consumer. In the case when the buffer is either full or empty, waiting spin\footnote{A procedure to constantly check if the queue has new tasks to process. This is a common technique used in parallel programming.} is used to hold execution till the moment when more tasks are available for a consumer.
 
-In this implementation a generalized version of the pattern is used, which assumes multiple producers and consumers operating on a single fixed buffer. The main idea is to create a separate tasks, which later are consumed by active threads from the thread-pool\footnote{A thread pool is a group of pre-instantiated, idle threads which stand ready to be given work, in this case simplification tasks from the queue.}. To create those tasks, clustering of the mesh is introduced.
+In this implementation a generalized version of the pattern is used, which assumes multiple producers and consumers operating on a single fixed buffer. The main idea is to create separate tasks, which later are consumed by active threads from the thread-pool\footnote{A thread pool is a group of pre-instantiated, idle threads which stand ready to be given work, in this case simplification tasks from the queue.}. To create those tasks, clustering of the mesh is introduced.
 
 \newpage
 \section{Producer Design}
@@ -475,18 +495,18 @@ To cluster a mesh into sub-boxes, a simple method of dividing the global boundin
 
 \begin{figure}[H]
   \begin{center}
-    \includegraphics[width=14cm]{clustering}
+    \includegraphics[width=13cm]{clustering}
     \caption{Example of clustring a mesh into 7x7x7 clusters.}
     \label{fig:clustering}
   \end{center}
 \end{figure}
 
-Figure \ref{fig:clustering} shows an example with arbitrary $7x7x7=343$ clusters, where each dimension of the main bounding box $[B]$ was divided into 7 equal parts $[C]$. When clustered boxes are calculated, the membership check to which cluster belongs a face is performed. In the case when a face intersects multiple clusters the voting procedure is done. Which is defined as follows; if two vertices of a face belong to the same cluster this box is selected as a holder of the face. If each vertex belongs to a different cluster then one box is randomly selected. The pseudocode of the producer is the following:
+Figure \ref{fig:clustering} shows an example with arbitrary $7x7x7=343$ clusters, where each dimension of the main bounding box $[B]$ was divided into 7 equal parts $[C]$. When clustered boxes are calculated, the membership check to which cluster a face belongs is performed. In the case when a face intersects multiple clusters a voting procedure is done, which is defined as follows; if two vertices of a face belong to the same cluster this cluster is selected as a holder of the face. If each vertex belongs to a different cluster then one box is randomly selected. The pseudocode of the producer is the following:
 \newline
 \begin{center}
 \begin{lstlisting}[caption={C style psuedocode of a producer.},captionpos=b]
 void function produce {
-    clusters = getClusters(size, masterMesh);
+    clusters = getClusters(size, mesh);
     for (cluster : clusters){
         set faceCluster to empty
         for (face : cluster.elements){
@@ -499,12 +519,12 @@ void function produce {
 \end{lstlisting}
 \end{center}
 
-In the line 7 the $vote()$ function is used to assign the correct cluster $id$ and membership of a face. The line 9 inserts the $faceCluster$ to the queue for further processing.
+In the line 6 the $vote()$ function is used to assign the correct cluster $id$ and membership of a face. The line 9 inserts the $faceCluster$ to the queue for further processing.
 
 \newpage
 \section{Consumer Design}
 
-The consumer process is desing in a way to utilize funcionality of $\inlinecode{Java}{boost::thread_group}$ and $\inlinecode{Java}{boost::asio::io_service}$. The thread group is a class which helps with thread management and provides a container for easy grouping of threads to simplify several common thread creation and management idioms \cite{boost03}. A user has to specify how many threads will be created and added to the thread-pool. Those threads operate directly on the queue, removing tasks and processing data. In this case they are preforming simplification of a mesh on each cluster independently.
+The consumer process is designed in a way to utilize funcionality of $\inlinecode{Java}{boost::thread_group}$ and $\inlinecode{Java}{boost::asio::io_service}$. The thread group is a class which helps with thread management and provides a container for easy grouping of threads to simplify several common thread creation and management idioms \cite{boost03}. A user has to specify how many threads will be created and added to the thread-pool. Those threads operate directly on the queue, removing tasks and processing data. In this case they are preforming simplification of a mesh on each cluster independently.
 \newline
 \begin{center}
 \begin{lstlisting}[caption={C style psuedocode of a task for a consumer.},captionpos=b]
@@ -519,21 +539,21 @@ void function task {
 
 Each task gets a single cluster to process. The $QuadricError$ is a type of a quadric error metric which specifies attributes for the calculations like; geometry, color, normals. The class $QSlim$ is responsible for all simplification operations and was elaborated in the previous sections.
 
-All decimating operations executed by threads are independent, except those on the borders. If one vertex of a face belongs to a different cluster and this cluster is processed by a different thread, a clever locking strategy has to be used. The main idea is to lock\footnote{Locking is a synchronization mechanism for enforcing limits on access to a resource in an environment where there are many threads of execution.} the whole neighborhood of an edge. To avoid deadlocks, a specialized version of $\inlinecode{Java}{boost::recursive_mutex}$ is used. It allows to be locked multiple times by the same thread. In the border situation, the best solution for obtaining a lock is to use the method $\inlinecode{Java}{bool try_lock()}$ which returns immediately false if the mutex is already locked by a different thread. It means that the given neighborhood is already processing by a different thread and the simplification process for the current thread is terminated.
+All decimating operations executed by threads are independent, except those on the borders. If one vertex of a face belongs to a different cluster and this cluster is processed by a different thread, a clever locking strategy has to be used. The main idea is to lock\footnote{Locking is a synchronization mechanism for enforcing limits on access to a resource in an environment where there are many threads of execution.} the whole neighborhood of an edge. To avoid deadlocks, a Boost specialized version of $\inlinecode{Java}{boost::recursive_mutex}$ is used. It allows to be locked multiple times by the same thread. In the border situation, the best solution for obtaining a lock is to use the method $\inlinecode{Java}{bool try_lock()}$ which returns immediately false if the mutex is already locked by a different thread. It means that the given neighborhood is already processing by a different thread and the simplification process for the current thread is terminated because the edge is deleted by a different process.
 
 $\inlinecode{Java}{boost::asio::io_service}$ is responsible for the whole producer consumer work-flow and is the centerpiece in this implementation. The service nicely utilizes functionality of a thread-pool. The method $post()$ creates tasks and pushes them to the queue where later they are processed by threads from the thread-pool.
 
 \newpage
 \section{Design}
 
-The algorithm is based on Garland's simplification quadric error metric algorithm. The main difference is clustering and parallel consuming parts of a mesh with adaptive thresholding for each iteration. This approach guarantees global update and accumulation of quadrics for each iteration in such a way that planar surfaces are always decimated first. The main goal of this work, is to transfer from global pool of vertices for a mesh to two separate pools, one for complex shapes and one for planar surfaces. A vertex pools are just conceptual terms which mean the number of vertices which we want to remove to achieve our convergence criteria. However, to keep complex shapes intact, vertices from planar surfaces have to be removed as much as possible to maintain a given trade-off in pools. Therefore, outer loop of the algorithm, which increases the threshold level, is so crucial. The reconstruction always creates a mesh with evenly distributed triangles. This assumption, drives the design of the algorithm. Complex shapes have high quardic error. Appropriately manipulated threshold can achieve the desired transfer goal.
+The algorithm is based on Garland's simplification quadric error metric algorithm. The main difference is clustering and parallel consuming parts of a mesh with adaptive thresholding for each iteration. This approach guarantees global update and accumulation of quadrics for each iteration in such a way that planar surfaces are always decimated first. The main goal of this work, is to transfer from a global pool of vertices for a mesh to two separate pools, one for complex shapes and one for planar surfaces. Vertex pools are just conceptual terms which mean the number of vertices which we want to remove to achieve our convergence criteria. However, to retain complex shapes intact, vertices from planar surfaces have to be removed as much as possible to maintain a given trade-off in pools. Therefore, the outer loop of the algorithm, which increases the threshold level, is crucial. The reconstruction always creates a mesh with evenly distributed triangles. This assumption drives the design of the algorithm. Complex shapes have high quadric error. An appropriately manipulated threshold can achieve the desired transfer goal.
 
-To improve time of the simplification convergence, aggressiveness can be always increased. The only problem is the final quality of the approximation. The iterative nature of using Garland's algorithm and adaptive thresholding, which targets only planar surface, does not always hold in this case. However, it allows to save around 50\% time of processing by slightly increasing aggressiveness. It can be easily modify be program parameters.
+To improve time of the simplification convergence, aggressiveness can be increased. The only problem is the final quality of the approximation. The iterative nature of using Garland's algorithm and adaptive thresholding, which targets only planar surface, does not always hold in this case. However, it allows to save around 50\% time of processing by slightly increasing aggressiveness.
 
 \newpage
-\section{Resutls}
+\section{Results}
 
-This section elaborates results of multi-threaded experiments of the algorithm. Additionally, the time investigation of each execution in multiple scenarios is shown. The tests were performed on a machine with 32 GB of RAM and Intel i7-6700 CPU 3.40GHz with 8 physical cores on a mesh with 982624 faces and 517715 vertices. Four different setups were ran with the objective to achieve reduction level 85\% of the original mesh:
+This section elaborates results of multi-threaded experiments of the algorithm. Additionally, the time investigation of each execution in multiple scenarios is shown. The tests were performed on a machine with 32 GB of RAM and Intel i7-6700 CPU 3.40GHz with 4 physical cores on a mesh with 982624 faces and 517715 vertices. Four different setups were ran with the objective to achieve a reduction level of 85\% of the original mesh:
 
 \begin{table}[h!]
 \centering
@@ -543,8 +563,8 @@ This section elaborates results of multi-threaded experiments of the algorithm. 
  \hline
  1 & 1 & 151.611s\\ 
  8 & 8 & 75.557s\\ 
- 27 & 27 & 57.405s\\
  27 & 8 & 58.957s\\
+ 27 & 27 & 57.405s\\
  \hline
 \end{tabular}
 \caption{4 different test setups.}
@@ -558,7 +578,7 @@ This section elaborates results of multi-threaded experiments of the algorithm. 
   \end{center}
 \end{figure}
 
-The Figure \ref{fig:execution_time} shows how much time does it take to simplify a mesh in one iteration. In total, there were 19 iterations to achieve the 85\% of simplification. The one iteration in this case, is the full pass of the simplification algorithm. It means; to wait for all active threads to finish processing sub-meshes. Naturally, the time is getting smaller with each iteration because of less vertices to process. As it is expected, the single threaded version performs very poorly. Using more than 1 thread can achieve better results with the best speedup around 3.5.
+The Figure \ref{fig:execution_time} shows how much time does it take to simplify a mesh in one iteration. In total, there were 19 iterations to achieve the 85\% of simplification. One iteration in this case, is the full pass of the simplification algorithm. It means; to wait for all active threads to finish processing the sub-meshes. Naturally, the time is getting smaller with each iteration because of less vertices to process. As it is expected, the single threaded version performs very poorly. Using more than 1 thread can achieve better results with the best speedup of around 3.5.
 
 \begin{figure}[H]
   \begin{center}
@@ -568,16 +588,16 @@ The Figure \ref{fig:execution_time} shows how much time does it take to simplify
   \end{center}
 \end{figure}
 
-The Figure \ref{fig:speedup} desciribes the best speedup for each iteration. The value oscillates around 2.5 and 3 which is a decent result for this complex algorithm. Moreover, in the Figure \ref{fig:execution_time} the Amdahl's law is visible in practice. Incerasing number of threads does not improve speed up \cite{amdahl67}.
+The Figure \ref{fig:speedup} desciribes the best speedup for each iteration. The value oscillates around 2.5 and 3 which is a decent result for this complex algorithm. Moreover, in the Figure \ref{fig:execution_time} the Amdahl's law is visible in practice. Incerasing number of threads does not improve speedup \cite{amdahl67}.
 
-To avoid synchronization overhead deep coping of a sub-meshes was tried. Those deeply copied sub-meshes were passed to processing threads. The problem with this solution is merging sub-meshes into the master mesh after simplification. To preserve local geometry on the edges the process of decimation need not to change or remove them. It gives a rise to another problem with convergence. Moreover, merging meshes takes time and the algorithm does not gain much performance speedup using this strategy.
+To avoid synchronization overhead deep copying of a sub-meshes was tried. Those deeply copied sub-meshes were passed to the processing threads. The problem with this solution is merging sub-meshes into the master mesh after simplification. To preserve local geometry on the edges, the process of decimation need not to change or remove them, which gives a rise to the problem with convergence. Moreover, merging meshes takes time and the algorithm does not gain much performance speedup using this strategy.
 
-Summarizing, the parallel execution of clusters gives a desired speedup. The algorithm is able to process big meshes up to a few million of faces in reasonable time, which is necessary for streaming purposes and a production usage.
+Summarizing, the parallel execution of clusters gives a desired speedup. The algorithm is able to process big meshes up to a few million of faces in reasonable time, which is necessary for streaming purposes and production usage.
 
 \newpage
 \section{Taubin Smoothing}
 
-During the research and later implementation of the algorithm, faster convergance to selected level of reduction was noticed, if a mesh smoothing is used. For purposes of this work, Taubin Smoothing algorithm was used. The method is a linear low-pass filter that removes high curvature variations and does not produce shrinkage \cite{taubin95}.
+During the research and later implementation of the algorithm, faster convergance to selected level of reduction was noticed when the input mesh was smoothed in a pre-processing step. For purposes of this work, Taubin Smoothing algorithm was used. The method is a linear low-pass filter that removes high curvature variations and does not produce shrinkage \cite{taubin95}.
 
 \begin{center}
   	\begin{table}[h!]
@@ -606,7 +626,7 @@ During the research and later implementation of the algorithm, faster converganc
 \caption{Taubin algorithm parameters.}
 \end{table}
 \newpage
-The simplification was ran on the mesh with 396277 faces and 208825 vertices. The mesh was reduced to 50009 faces and 29347 vertices. In the Table \ref{fig:time_speedup} it can be seen that the speedup compared with the single core is around 1.6. Additionally, in the Table \ref{tab:smoothing_effect} shows that planar surfaces look better after simplification with smoothing.
+The simplification was ran on the mesh with 396277 faces and 208825 vertices. The mesh was reduced to 50009 faces and 29347 vertices. In Table \ref{fig:time_speedup} it can be seen that the speedup compared with the single core is around 1.6. Additionally, in the Table \ref{tab:smoothing_effect} shows that planar surfaces look better after simplification with smoothing.
 
 \begin{table}[h!]
 \centering
@@ -648,18 +668,18 @@ Figure \ref{fig:convergance} shows comparison of the algorithm execution with an
 \end{enumerate}
 \item Update the mesh structure:
 \begin{enumerate}
-\item Remove faces flagged as invalid.
+\item Remove faces flagged as invalid\footnote{Removed faces and vertices are flagged as invalid due to the parallel nature of the algorithm and not thread-safe graph structure used in the implementation. Once the parallel processing is done, faces and vertices can be safely deleted from the graph.}.
 \item Reset properties for each remaining face and vertex.
 \end{enumerate}
 \item Repeat from the second step till convergence.
 \end{enumerate}
 
-As it is shown above, the parallel algorithm nicely wraps Garland's algorithm in the third step. Procedure from the second step is repeated till either reduction level is reached, or the number of iterations is exceeded. To achieve a nice planar simplification the adaptive threshold level is used. The third step is terminated for a given thread if the cost level is higher than the threshold.
+As it is shown above, the parallel algorithm nicely wraps Garland's algorithm in the third step. Procedure from the second step is repeated till either reduction level is reached, or the number of iterations is exceeded. To achieve a simplification focused on planar surfaces the adaptive threshold level is used. The third step is terminated for a given thread if the cost level is higher than the threshold.
 
 \newpage
 \section{Comparison to Commercially Available Products}
 
-Most of commercially available algorithms use only geometry to generate an approximation of a mesh. Libraries like OpenMesh do not provide an API to use all attributes of a vertex. Moreover, increasing the number of constraints does not help. The problem is not solved jointly like in the case of this work. Additionally, those algorithms simplify a mesh globally, which introduces almost even decimation for all surfaces. Below is shown a comparison between this method and several different approaches available commercially. The benchmark was to reduce the original mesh 85\%.
+Most of commercially available algorithms use only geometry to generate an approximation of a mesh. Libraries like OpenMesh do not provide an API to use all attributes of a vertex. Moreover, increasing the number of constraints does not help. The problem is not solved jointly like in the case of this work. Additionally, those algorithms simplify a mesh globally, which introduces almost even decimation for all surfaces. Below is shown a comparison between this method and several different approaches available commercially. The benchmark was to reduce the original mesh by 85\%.
 
 \begin{figure}[H]
   \begin{center}
@@ -679,7 +699,7 @@ Figure \ref{fig:original} shows the original mesh with evenly distributed faces.
   \end{center}
 \end{figure}
 
-Figure \ref{fig:fast_collapse} shows Fast-Quadric-Mesh-Simplification algorithm by Sven Forstmann, which is \href{https://github.com/sp4cerat/Fast-Quadric-Mesh-Simplification}{a Github implementation} of memory efficient and very fast edge collapse mesh simplification method. According to the creator it is around 4 times faster than Meshlab version. Figure \ref{fig:fast_collapse} shows the result where it can be seen that all surfaces are decimated evenly. Moreover, the algorithm is based only on vertex iteration with adaptive thresholding without building a heap of edges.
+Figure \ref{fig:fast_collapse} shows Fast-Quadric-Mesh-Simplification algorithm by Sven Forstmann, which is \href{https://github.com/sp4cerat/Fast-Quadric-Mesh-Simplification}{a Github implementation} of memory efficient and very fast edge collapse mesh simplification method. According to the creator it is around 4 times faster than the Meshlab version. Figure \ref{fig:fast_collapse} shows the result where it can be seen that all surfaces are decimated evenly. Moreover, the algorithm is based only on vertex iteration with adaptive thresholding without building a heap of edges.
 
 \begin{figure}[H]
   \begin{center}
@@ -689,7 +709,7 @@ Figure \ref{fig:fast_collapse} shows Fast-Quadric-Mesh-Simplification algorithm 
   \end{center}
 \end{figure}
 
-Figure \ref{fig:open_mesh} shows the usage of OpenMesh library, where the decimation was done using geometry and normals. Because of that, border edges were not touched. In this case, borders can produce errors in the approximation, like spiky edges. Border preserving is mostly visible on the plant structure or the monitors edges. This method gives the poorest result, however, it is almost as fast as Fast-Quadric-Mesh-Simplification.
+Figure \ref{fig:open_mesh} shows the usage of OpenMesh library, where the decimation was done using geometry and normals. Because of that, border edges were not touched. In this case, borders can produce topology errors in the approximation, like spiky edges. Border preserving is mostly visible on the plant structure or the monitors edges. This method gives the poorest result, however, it is almost as fast as Fast-Quadric-Mesh-Simplification.
 
 \begin{figure}[H]
   \begin{center}
@@ -699,7 +719,7 @@ Figure \ref{fig:open_mesh} shows the usage of OpenMesh library, where the decima
   \end{center}
 \end{figure}
 
-As it can be seen in the Frigure \ref{fig:mesh_lab} the approximation is very similar to Figure \ref{fig:fast_collapse}. However, the MeshLab version is slower than Fast-Quadric-Mesh-Simplification algorithm.
+As it can be seen in Figure \ref{fig:mesh_lab} the approximation is very similar to Figure \ref{fig:fast_collapse}. However, the MeshLab version is slower than Fast-Quadric-Mesh-Simplification algorithm.
 
 \begin{figure}[H]
   \begin{center}
@@ -709,7 +729,7 @@ As it can be seen in the Frigure \ref{fig:mesh_lab} the approximation is very si
   \end{center}
 \end{figure}
 
-Figure \ref{fig:my_3} shows approximation produced by the version of the algorithm elaborated in the chapter 4. The complex shapes are preserved much better than in all previous versions. However, there is still room for even more aggressive decimation of planar surfaces. To achieve it, we need to use more attributes in our joint optimization.
+Figure \ref{fig:my_3} shows approximation produced by the version of the algorithm elaborated in chapter 4. The complex shapes are preserved much better than in all previous versions. However, there is still room for even more aggressive decimation of planar surfaces. To achieve it, we need to use more attributes in our joint optimization.
 
 \begin{figure}[H]
   \begin{center}
@@ -719,7 +739,7 @@ Figure \ref{fig:my_3} shows approximation produced by the version of the algorit
   \end{center}
 \end{figure}
 
-Figure \ref{fig:my_9} shows the best approximation under the constrain of decimating most of the planar surface. All complex shapes are almost intacted from the original mesh. The faces which describe the wall are as big as possible. Moreover, iterative nature of the algorithm, allows to level small surface elevation changes. For instance, the interior part of the pouf near the wall. In the Figure \ref{fig:my_3} it can be seen that the noise and level changes, meaning high quadric error, prevents this region from being simplified. In the version with all attributes $[geometry, normal, color]$, the interior part is nicely leveled.
+Figure \ref{fig:my_9} shows the best approximation under the constrain of decimating most of the planar surface. All complex shapes are almost completely preserved from the original mesh. The faces which describe the wall are as big as possible. Moreover, iterative nature of the algorithm, allows to level small surface elevation changes. For instance, the interior part of the pouf near the wall. In Figure \ref{fig:my_3} it can be seen that the noise and level changes, meaning high quadric error, prevents this region from being simplified. In the version with all attributes $[geometry, normal, color]$, the interior part is nicely leveled.
 
 \begin{figure}[H]
   \begin{center}
@@ -729,4 +749,4 @@ Figure \ref{fig:my_9} shows the best approximation under the constrain of decima
   \end{center}
 \end{figure}
 
-For the completeness, a paid version of simplification algorithm was used. The algorithm was provided by the company RapidCompact. Figure \ref{fig:rapid_compact} shows that the result is almost exactly the same, like in the case of the MeshLab and Fast-Quadric-Mesh-Simplification algorithm.
+For completeness, a commercial version of simplification algorithm was used. The algorithm was provided by the company RapidCompact. Figure \ref{fig:rapid_compact} shows that the result is almost exactly the same, like in the case of the MeshLab and Fast-Quadric-Mesh-Simplification algorithm.
