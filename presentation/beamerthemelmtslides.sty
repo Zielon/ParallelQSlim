@@ -53,7 +53,7 @@
 																										{
 																											\ifthenelse{\equal{#1}{Df}}{Diplomarbeit Final Presentation}
 																											{
-																												\ifthenelse{\equal{#1}{Sf}}{Studienarbeit  Final Presentation}
+																												\ifthenelse{\equal{#1}{Sf}}{Interdisciplinary Project  Final Presentation}
 																												{
 																													\ifthenelse{\equal{#1}{Mm}}{Master Thesis Midterm Presentation}
 																													{
@@ -76,6 +76,9 @@
 \newcommand{\email}[1]{\newcommand{\insertemail}{#1}}
 \newcommand{\advisor}[1]{\newcommand{\insertadvisor}{#1}}
 \newcommand{\emailAdvisor}[1]{\newcommand{\insertemailAdvisor}{#1}}
+
+\newcommand{\supervisor}[1]{\newcommand{\insertsupervisor}{#1}}
+\newcommand{\emailSupervisor}[1]{\newcommand{\insertemailSupervisor}{#1}}
 
 \renewcommand{\maketitle}{\frame[plain]{\titlepage}}
 
@@ -133,6 +136,10 @@
 	\medskip
 	{\bf\small \ifthenelse{\equal{\lang}{de}}{Betreuer:}{Advisor:} \insertadvisor}\\
 	{\small \insertemailAdvisor}
+	
+	{\bf\small \ifthenelse{\equal{\lang}{de}}{Betreuer:}{Supervisor:} \insertsupervisor}\\
+	{\small \insertemailSupervisor}
+	
 \end{flushright}
 }
 

@@ -46,6 +46,8 @@
 \email{wojciech.zielonka@tum.de}
 \advisor{Prof. Dr.-Ing. Eckehard Steinbach}
 \emailAdvisor{eckehard.steinbach@tum.de}
+\supervisor{Michael Gerstmayr}
+\emailSupervisor{micheal.gerstmayr@navvis.com}
 \date{\today}
 %------------------------------
 
@@ -58,12 +60,21 @@
 \ClearShipoutPicture
 \AddToShipoutPicture{\BackgroundPicture}
 
+\section{Agenda}
+\centering
+\begin{frame}
+\frametitle{Agenda}
+\begin{center}
+
+\end{center}
+\end{frame}
+
 \section{Short Introduction}
 \centering
 \begin{frame}
 \frametitle{Introduction}
 \begin{center}
-The project was completed in NavVis company under the internal supervising of Senior Software Engineer Michael Gerstmayr and was a part of research on mesh reconstruction using dense point clouds from laser scanned environments.
+The project was completed in NavVis company a part of research on mesh reconstruction using dense point clouds from laser scanned environments.
 \end{center}
 \end{frame}
 
@@ -96,7 +107,7 @@ The project elaborates a specific case of mesh simplification, where the focus i
 
 \section{Assumptions}
 \begin{frame}
-\frametitle{Assumptions}
+\frametitle{Goals}
 \begin{enumerate}
 \centering
 \item Simplify mostly planar surface.
@@ -114,7 +125,7 @@ The project elaborates a specific case of mesh simplification, where the focus i
 \end{figure}
 \end{frame}
 
-\section{How to Find an Edge}
+\section{How to Select Edges?}
 \begin{frame}
 \frametitle{How to Select Edges?}
 \centering
@@ -152,6 +163,37 @@ Q(\mathbf{v}) &= D^2(\mathbf{v})
 \end{align}
 \end{frame}
 
+\section{How to Select Edges Quadric accumulation}
+\begin{frame}
+\frametitle{How to Select Edges?}
+\centering
+\begin{enumerate}
+\color{gray}
+\item Select a set of candidate vertex pairs $(\mathbf{v_i}, \mathbf{v_j})$.
+\color{black}
+\item Allocate a quadric $Q_i$ for each vertex $\mathbf{v_i}$.
+\item For each face compute a quadric $Q_i$. Add this quadric to the vertex quadrics $Q_i, Q_k, Q_l$ and optionally weight it appropriately.
+\color{gray}
+\item For each candidate pair $(\mathbf{v_i}, \mathbf{v_j})$:
+\color{gray}
+\begin{enumerate}
+\color{gray}
+\item Compute $Q = Q_i + Q_j$.
+\item Select a target position $\mathbf{\bar{v}}$.
+\item Apply consistency checks and penalties.
+\item Place pair in heap keys on cost $Q(\mathbf{\bar{v}})$
+\end{enumerate}
+\item Repeat until the desired approximation is reached:
+\begin{enumerate}
+\color{gray}
+\item Remove the pair $(\mathbf{v_i}, \mathbf{v_j})$ of least cost from the heap.
+\item Preform contraction $(\mathbf{v_i}, \mathbf{v_j})\rightarrow\bar{\mathbf{v}}$
+\item Set $Q_i = Q_i + Q_j$.
+\item For each remaining pair $(\mathbf{v_i}, \mathbf{v_j})$, compute target position and cost as in step 4; update heap.
+\end{enumerate}
+\end{enumerate}
+\end{frame}
+
 \section{Quadric Accumulation}
 \begin{frame}
 \frametitle{Quadric Accumulation}
@@ -164,6 +206,36 @@ Q(\mathbf{v}) &= D^2(\mathbf{v})
 Q_i(\mathbf{v}) + Q_j(\mathbf{v}) &= (\mathbf{A_i} + \mathbf{A_j}, \mathbf{b_i} + \mathbf{b_j}, c_i + c_j)\\
 E_Q(\mathbf{v}) &= \sum_{i} D_i^2(\mathbf{v}) = \sum_{i} Q_i(\mathbf{v}) = Q(\mathbf{v})
 \end{align}
+\end{frame}
+
+\section{How to Select Edges Quadric accumulation}
+\begin{frame}
+\frametitle{How to Select Edges?}
+\centering
+\begin{enumerate}
+\color{gray}
+\item Select a set of candidate vertex pairs $(\mathbf{v_i}, \mathbf{v_j})$.
+\item Allocate a quadric $Q_i$ for each vertex $\mathbf{v_i}$.
+\item For each face compute a quadric $Q_i$. Add this quadric to the vertex quadrics $Q_i, Q_k, Q_l$ and optionally weight it appropriately.
+\color{black}
+\item For each candidate pair $(\mathbf{v_i}, \mathbf{v_j})$:
+\color{gray}
+\begin{enumerate}
+\item Compute $Q = Q_i + Q_j$.
+\item Select a target position $\mathbf{\bar{v}}$.
+\item Apply consistency checks and penalties.
+\item Place pair in heap keys on cost $Q(\mathbf{\bar{v}})$
+\end{enumerate}
+\color{gray}
+\item Repeat until the desired approximation is reached:
+\begin{enumerate}
+\color{gray}
+\item Remove the pair $(\mathbf{v_i}, \mathbf{v_j})$ of least cost from the heap.
+\item Preform contraction $(\mathbf{v_i}, \mathbf{v_j})\rightarrow\bar{\mathbf{v}}$
+\item Set $Q_i = Q_i + Q_j$.
+\item For each remaining pair $(\mathbf{v_i}, \mathbf{v_j})$, compute target position and cost as in step 4; update heap.
+\end{enumerate}
+\end{enumerate}
 \end{frame}
 
 \section{Create Edges}
@@ -192,12 +264,26 @@ Solving for $\nabla Q(\mathbf{v}) = 0$, the optimal position is defined:
 
 \end{frame}
 
-\section{Heap Iterations}
+\section{How to Select Edges Quadric accumulation}
 \begin{frame}
-\frametitle{Heap Iterations}
+\frametitle{How to Select Edges?}
 \centering
 \begin{enumerate}
-\item [5.] Repeat until the desired approximation is reached:
+\color{gray}
+\item Select a set of candidate vertex pairs $(\mathbf{v_i}, \mathbf{v_j})$.
+\item Allocate a quadric $Q_i$ for each vertex $\mathbf{v_i}$.
+\item For each face compute a quadric $Q_i$. Add this quadric to the vertex quadrics $Q_i, Q_k, Q_l$ and optionally weight it appropriately.
+\item For each candidate pair $(\mathbf{v_i}, \mathbf{v_j})$:
+\color{gray}
+\begin{enumerate}
+\color{gray}
+\item Compute $Q = Q_i + Q_j$.
+\item Select a target position $\mathbf{\bar{v}}$.
+\item Apply consistency checks and penalties.
+\item Place pair in heap keys on cost $Q(\mathbf{\bar{v}})$
+\end{enumerate}
+\color{black}
+\item Repeat until the desired approximation is reached:
 \begin{enumerate}
 \item Remove the pair $(\mathbf{v_i}, \mathbf{v_j})$ of least cost from the heap.
 \item Preform contraction $(\mathbf{v_i}, \mathbf{v_j})\rightarrow\bar{\mathbf{v}}$
@@ -224,10 +310,10 @@ T &= (\mathbf{p}, \mathbf{q}, \mathbf{r})\\
 
 \section{Plane}
 \begin{frame}
-\frametitle{Plane in $\mathbf{R}^n$}
+\frametitle{Plane in $\mathbb{R}^n$}
 \centering
 \begin{align}
-\mathbf{e_1} &= \mathbf{h} / \norm{\mathbf{e_1}} \\
+\mathbf{e_1} &= \mathbf{h} / \norm{\mathbf{h}} \\
 \mathbf{e_2} &= \frac{\mathbf{k} - (\mathbf{e_1} \cdot \mathbf{k})\mathbf{e_1}}{\norm{\mathbf{k} - (\mathbf{e_1} \cdot \mathbf{k})\mathbf{e_1}}}
 \end{align}
 \begin{figure}[ht]
