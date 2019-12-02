@@ -65,7 +65,14 @@
 \begin{frame}
 \frametitle{Agenda}
 \begin{center}
-
+\begin{enumerate}
+\centering
+\item Introduction
+\item Basic Simplification Algorithm
+\item Extended Simplification Algorithm
+\item Parallel Simplification Algorithm
+\item Comparison to Commercially Available Products
+\end{enumerate}
 \end{center}
 \end{frame}
 
@@ -78,27 +85,27 @@ The project was completed in NavVis company a part of research on mesh reconstru
 \end{center}
 \end{frame}
 
-\section{Motivation}
-\centering
-\begin{frame}
-\frametitle{Motivation}
-\begin{center}
-The project elaborates a specific case of mesh simplification, where the focus is mostly on planar surfaces, like walls and floors, at the same time, keeping high level of details for complex shapes; plants, elements on desks in an office.
-\end{center}
-\end{frame}
-
 \section{Get From}
 \begin{frame}
-\frametitle{How to Get From This Mesh?}
+\frametitle{Original Mesh}
 \begin{figure}[ht]
 	\centering
     \includegraphics[width=1\textwidth]{from}
 \end{figure}
 \end{frame}
 
+\section{Fast Edge Collapse [Geometry]}
+\begin{frame}
+\frametitle{Current Approach}
+\begin{figure}[ht]
+\centering
+\includegraphics[width=1\textwidth]{fast_collapse}
+\end{figure}
+\end{frame}
+
 \section{To}
 \begin{frame}
-\frametitle{To This Mesh?}
+\frametitle{This Work Approach}
 \begin{figure}[ht]
 	\centering
     \includegraphics[width=1\textwidth]{to}
@@ -122,6 +129,9 @@ The project elaborates a specific case of mesh simplification, where the focus i
 \begin{figure}[ht]
 \centering
 \includegraphics[width=1\textwidth]{edge_contraction}
+\begin{align}
+(\mathbf{v}_i, \mathbf{v}_j)\rightarrow\bar{\mathbf{v}}
+\end{align}
 \end{figure}
 \end{frame}
 
@@ -368,6 +378,16 @@ T &= (\mathbf{p}, \mathbf{q}, \mathbf{r})\\
 \centering
 \begin{figure}[ht]
 \centering
+\includegraphics[width=10cm,height=6cm]{nosiy_floor}
+\end{figure}
+\end{frame}
+
+\section{Results}
+\begin{frame}
+\frametitle{Results}
+\centering
+\begin{figure}[ht]
+\centering
 \includegraphics[width=10cm,height=6cm]{desk}
 \end{figure}
 \end{frame}
@@ -397,6 +417,35 @@ T &= (\mathbf{p}, \mathbf{q}, \mathbf{r})\\
 \end{enumerate}
 \end{frame}
 
+\section{Parallel Iterative Adaptive Thresholding}
+\begin{frame}
+\frametitle{Parallel Iterative Adaptive Thresholding}
+\centering
+\begin{enumerate}
+\item Smooth mesh using Taubin's algorithm (optional).
+\color{gray}
+\item Cluster the mesh:
+\begin{enumerate}
+\color{gray}
+\item Split the mesh according to number of selected clusters; for example 2x2x2=8.
+\item Add a task for each cluster to the queue.
+\end{enumerate}
+\item Wait for all threads from the thread-pool to finish processing simplification algorithm [QSlim] ran on all clusters. Each thread does:
+\begin{enumerate}
+\color{gray}
+\item Build the heap with edges.
+\item Decimate edges till reaching the threshold level.
+\end{enumerate}
+\item Update the mesh structure:
+\begin{enumerate}
+\color{gray}
+\item Remove faces flagged as invalid.
+\item Reset properties for each remaining face and vertex.
+\end{enumerate}
+\item Repeat from the second step till convergence.
+\end{enumerate}
+\end{frame}
+
 \section{Smoothing}
 \begin{frame}
 \frametitle{Taubin's algorithm}
@@ -409,6 +458,36 @@ Taubin Smoothing is a linear low-pass filter that removes high curvature variati
 \centering
 \includegraphics[width=0.8\textwidth]{convergance}
 \end{figure}
+\end{frame}
+
+\section{Parallel Iterative Adaptive Thresholding}
+\begin{frame}
+\frametitle{Parallel Iterative Adaptive Thresholding}
+\centering
+\begin{enumerate}
+\color{gray}
+\item Smooth mesh using Taubin's algorithm (optional).
+\color{black}
+\item Cluster the mesh:
+\begin{enumerate}
+\item Split the mesh according to number of selected clusters; for example 2x2x2=8.
+\item Add a task for each cluster to the queue.
+\end{enumerate}
+\color{gray}
+\item Wait for all threads from the thread-pool to finish processing simplification algorithm [QSlim] ran on all clusters. Each thread does:
+\begin{enumerate}
+\color{gray}
+\item Build the heap with edges.
+\item Decimate edges till reaching the threshold level.
+\end{enumerate}
+\item Update the mesh structure:
+\begin{enumerate}
+\color{gray}
+\item Remove faces flagged as invalid.
+\item Reset properties for each remaining face and vertex.
+\end{enumerate}
+\item Repeat from the second step till convergence.
+\end{enumerate}
 \end{frame}
 
 \section{Clustering}
@@ -427,6 +506,34 @@ Taubin Smoothing is a linear low-pass filter that removes high curvature variati
 \end{figure}
 \end{frame}
 
+\section{Parallel Iterative Adaptive Thresholding}
+\begin{frame}
+\frametitle{Parallel Iterative Adaptive Thresholding}
+\centering
+\begin{enumerate}
+\color{gray}
+\item Smooth mesh using Taubin's algorithm (optional).
+\item Cluster the mesh:
+\begin{enumerate}
+\color{gray}
+\item Split the mesh according to number of selected clusters; for example 2x2x2=8.
+\item Add a task for each cluster to the queue.
+\end{enumerate}
+\color{black}
+\item Wait for all threads from the thread-pool to finish processing simplification algorithm [QSlim] ran on all clusters. Each thread does:
+\begin{enumerate}
+\item Build the heap with edges.
+\item Decimate edges till reaching the threshold level.
+\end{enumerate}
+\item Update the mesh structure:
+\begin{enumerate}
+\item Remove faces flagged as invalid.
+\item Reset properties for each remaining face and vertex.
+\end{enumerate}
+\item Repeat from the second step till convergence.
+\end{enumerate}
+\end{frame}
+
 \section{Producer Consumer}
 \begin{frame}
 \frametitle{Producer Consumer Design Pattern}
@@ -440,17 +547,19 @@ Taubin Smoothing is a linear low-pass filter that removes high curvature variati
 \begin{frame}
 \centering
 \frametitle{Parallel speedup}
-The tests were performed on a machine with 32 GB of RAM and Intel i7-6700 CPU 3.40GHz with 8 physical cores on a mesh with 982624 faces and 517715 vertices. Four different setups were ran with the objective to achieve reduction level 85\% of the original mesh.
+The tests were performed on a machine with 32 GB of RAM and Intel i7-6700 CPU 3.40GHz with 4 physical cores on a mesh with 982624 faces and 517715 vertices. Six different setups were ran with the objective to achieve reduction level 85\% of the original mesh.
 \begin{table}[h!]
 \centering
 \begin{tabular}{ |c|c|c| } 
  \hline
  Number of clusters & Threads in the pool & Total time processing\\
  \hline
- 1 & 1 & 151.611s\\ 
- 8 & 8 & 75.557s\\ 
- 27 & 27 & 57.405s\\
- 27 & 8 & 58.957s\\
+ 1 & 1 & 127.62s\\
+ 8 & 2 & 77.98s\\
+ 8 & 4 & 56.77s\\
+ 8 & 8 & 62.01s\\
+ 27 & 8 & 48.88s\\
+ 27 & 27 & 48.02s\\
  \hline
 \end{tabular}
 \caption{4 different test setups.}
