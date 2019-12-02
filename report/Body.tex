@@ -448,19 +448,23 @@ If the color gradient was constant in most of the places, the whole simplificati
   	\begin{center}
   	\begin{tabular}{cc}
 	\begin{subfigure}{0.5\textwidth}\centering\includegraphics
-		[width=8cm,height=6cm]{color_1}\caption{Original}\label{color1}\end{subfigure}&	
+		[width=7cm,height=5cm]{color_1}\caption{Original.}\label{color1}\end{subfigure}&	
 	\begin{subfigure}{0.5\textwidth}\centering\includegraphics
-		[width=8cm,height=6cm]{color_2}\caption{Color and geometry simplification}\label{color2}\end{subfigure}\\
+		[width=7cm,height=5cm]{color_2}\caption{Color and geometry simplification.}\label{color2}\end{subfigure}\\
 		\newline
 			\begin{subfigure}{0.5\textwidth}\centering\includegraphics
-		[width=8cm,height=6cm]{color_4}\caption{Original}\label{color1}\end{subfigure}&	
+		[width=7cm,height=5cm]{color_4}\caption{Original.}\label{color1}\end{subfigure}&	
 	\begin{subfigure}{0.5\textwidth}\centering\includegraphics
-		[width=8cm,height=6cm]{color_3}\caption{Color and geometry simplification}\label{color2}\end{subfigure}\\
+		[width=7cm,height=5cm]{color_3}\caption{Color and geometry simplification.}\label{color2}\end{subfigure}\\
 				\newline
 			\begin{subfigure}{0.5\textwidth}\centering\includegraphics
-		[width=8cm,height=6cm]{color_5}\caption{Original}\label{color1}\end{subfigure}&	
+		[width=7cm,height=5cm]{color_5}\caption{Original.}\label{color1}\end{subfigure}&	
 	\begin{subfigure}{0.5\textwidth}\centering\includegraphics
-		[width=8cm,height=6cm]{color_6}\caption{Color and geometry simplification}\label{color2}\end{subfigure}
+		[width=7cm,height=5cm]{color_6}\caption{Color and geometry simplification.}\label{color2}\end{subfigure}\\
+	\begin{subfigure}{0.5\textwidth}\centering\includegraphics
+		[width=7cm,height=5cm]{nosiy_floor_2}\caption{Original floor with color noise.}\label{color1}\end{subfigure}&	
+	\begin{subfigure}{0.5\textwidth}\centering\includegraphics
+		[width=7cm,height=5cm]{nosiy_floor}\caption{Gradient guided simplification error.}\label{color2}\end{subfigure}
 		\end{tabular}
   	\caption{Comparison of gradient guided simplification [geometry, color].} \label{tab:color_simplification}
   	\end{center}
@@ -553,7 +557,7 @@ To improve time of the simplification convergence, aggressiveness can be increas
 \newpage
 \section{Results}
 
-This section elaborates results of multi-threaded experiments of the algorithm. Additionally, the time investigation of each execution in multiple scenarios is shown. The tests were performed on a machine with 32 GB of RAM and Intel i7-6700 CPU 3.40GHz with 4 physical cores on a mesh with 982624 faces and 517715 vertices. Four different setups were ran with the objective to achieve a reduction level of 85\% of the original mesh:
+This section elaborates results of multi-threaded experiments of the algorithm. Additionally, the time investigation of each execution in multiple scenarios is shown. The tests were performed on a machine with 32 GB of RAM and Intel i7-6700 CPU 3.40GHz with 4 physical cores on a mesh with 982624 faces and 517715 vertices. Six different setups were ran with the objective to achieve a reduction level of 85\% of the original mesh:
 
 \begin{table}[h!]
 \centering
@@ -561,10 +565,12 @@ This section elaborates results of multi-threaded experiments of the algorithm. 
  \hline
  Number of clusters & Number of threads in the pool & Total time processing\\
  \hline
- 1 & 1 & 151.611s\\ 
- 8 & 8 & 75.557s\\ 
- 27 & 8 & 58.957s\\
- 27 & 27 & 57.405s\\
+ 1 & 1 & 127.62s\\
+ 8 & 2 & 77.98s\\
+ 8 & 4 & 56.77s\\
+ 8 & 8 & 62.01s\\
+ 27 & 8 & 48.88s\\
+ 27 & 27 & 48.02s\\
  \hline
 \end{tabular}
 \caption{4 different test setups.}
