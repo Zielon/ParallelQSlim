@@ -46,7 +46,7 @@ error(i)=0.000000001*(i+3)^a
 \end{align}
 where $i$ is the iteration and $a$ is the aggressiveness.
 
-The formula \ref{error_formula} is inspired by a Github implementation of Fast-Quadric-Mesh-Simplification, where the author introduced adaptive thresholding using \ref{error_formula}. The $aggressiveness$ has to be changed once the different attributes for error metric are used. The best results for geometry gives value $a=3$ and for the rest of attributes $a=5$ is used.
+The formula \ref{error_formula} is inspired by a Github implementation of Fast-Quadric-Mesh-Simplification, where the author introduced adaptive thresholding using \ref{error_formula}. The $aggressiveness$ has to be changed once the different attributes for the error metric are used. The best results for geometry gives value $a=3$ and for the rest of attributes $a=5$ is used.
 
 Rebuilding heap captures the change of geometry made in a contraction for the whole mesh. After one contraction we update only first order neighbors of a given vertex. Therefore, we need to rebuild heap to reflect the global change.
 
