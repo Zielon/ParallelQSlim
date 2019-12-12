@@ -41,7 +41,7 @@ The mentioned algorithm is a greedy procedure driven by the cost of contraction 
 
 Each edge is associated with a cost of contraction, which is basically the amount of error made during deletion of a given pair of vertices. This cost is a key in the minimum heap \cite{cormen01} which is iteratively $pop()$. In each main iteration (steps from 1 to 4) we contract edges up to the current adaptive threshold level. If a current edge's cost is bigger or equal than the acceptable error, the main iteration procedure is stopped and the remaining edges in the heap are ignored. In a next iteration, the heap is rebuilt and the error level is slightly increased in such a way that previously contracted regions are even more simplified. The error calculations are based on a hyper-parameters $aggressiveness$ and a current iteration value:
 \begin{align}
-error(i)=0.000000001*(i+3)^a
+error(i)=10^{-9}\cdot(i+3)^a
 \label{error_formula}
 \end{align}
 where $i$ is the iteration and $a$ is the aggressiveness.

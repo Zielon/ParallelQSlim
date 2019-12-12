@@ -64,16 +64,13 @@
 \centering
 \begin{frame}
 \frametitle{Agenda}
-\begin{center}
 \begin{enumerate}
-\centering
 \item Introduction
 \item Basic Simplification Algorithm
 \item Extended Simplification Algorithm
 \item Parallel Simplification Algorithm
 \item Comparison to Commercially Available Products
 \end{enumerate}
-\end{center}
 \end{frame}
 
 \section{Short Introduction}
@@ -96,7 +93,7 @@ The project was completed in NavVis company a part of research on mesh reconstru
 
 \section{Fast Edge Collapse [Geometry]}
 \begin{frame}
-\frametitle{Current Approach}
+\frametitle{Standard Simplification}
 \begin{figure}[ht]
 \centering
 \includegraphics[width=1\textwidth]{fast_collapse}
@@ -105,7 +102,7 @@ The project was completed in NavVis company a part of research on mesh reconstru
 
 \section{To}
 \begin{frame}
-\frametitle{This Work Approach}
+\frametitle{My Simplification}
 \begin{figure}[ht]
 	\centering
     \includegraphics[width=1\textwidth]{to}
@@ -116,7 +113,6 @@ The project was completed in NavVis company a part of research on mesh reconstru
 \begin{frame}
 \frametitle{Goals}
 \begin{enumerate}
-\centering
 \item Simplify mostly planar surface.
 \item Preserve complex shapes as much as possible.
 \item Use a parallel framework.
@@ -137,34 +133,23 @@ The project was completed in NavVis company a part of research on mesh reconstru
 
 \section{How to Select Edges?}
 \begin{frame}
-\frametitle{Basic Algorithm}
+\frametitle{Garland's Basic Algorithm}
 \centering
 \begin{enumerate}
 \item Select a set of candidate vertex pairs $(\mathbf{v_i}, \mathbf{v_j})$.
 \item Allocate a quadric $Q_i$ for each vertex $\mathbf{v_i}$.
-\item For each face compute a quadric $Q_i$. Add this quadric to the vertex quadrics $Q_i, Q_k, Q_l$ and optionally weight it appropriately.
-\item For each candidate pair $(\mathbf{v_i}, \mathbf{v_j})$:
-\begin{enumerate}
-\item Compute $Q = Q_i + Q_j$.
-\item Select a target position $\mathbf{\bar{v}}$.
-\item Apply consistency checks and penalties.
-\item Place pair in heap keys on cost $Q(\mathbf{\bar{v}})$
-\end{enumerate}
-\item Repeat until the desired approximation is reached:
-\begin{enumerate}
-\item Remove the pair $(\mathbf{v_i}, \mathbf{v_j})$ of least cost from the heap.
-\item Preform contraction $(\mathbf{v_i}, \mathbf{v_j})\rightarrow\bar{\mathbf{v}}$
-\item Set $Q_i = Q_i + Q_j$.
-\item For each remaining pair $(\mathbf{v_i}, \mathbf{v_j})$, compute target position and cost as in step 4; update heap.
-\end{enumerate}
+\item For each face compute a quadric $Q_i$.
+\item Initialize quadric for each $(\mathbf{v_i}, \mathbf{v_j})$ as $Q = Q_i + Q_j$.
+\item Remove the pair $(\mathbf{v_i}, \mathbf{v_j})$ of least cost from the heap and repeat.
 \end{enumerate}
 \end{frame}
 
 \section{Quadric}
 \begin{frame}
 \frametitle{What is Quadric?}
+Quadric is a squared distance to a plane/face.\\~\\
 \centering
-$\mathbf{n}^T\mathbf{v}+d=0$\\ normal $\mathbf{n} = [a\;b\;c]^T$\\ $d$ is a scalar constant\\ $\mathbf{v} = [x\;y\;z]^T$ is a point in $3D$ space.
+distance $D(\mathbf{v}) = \mathbf{n}^T\mathbf{v}+d$\\ normal $\mathbf{n} = [a\;b\;c]^T$\\ $d$ is a scalar constant\\ $\mathbf{v} = [x\;y\;z]^T$ is a point in $3D$ space.
 \\
 \begin{align}
 D^2(\mathbf{v}) &= (\mathbf{n}^T\mathbf{v}+d)^2 = (\mathbf{v}^T(\mathbf{n}\mathbf{n}^T)\mathbf{v}+2(d\mathbf{n})^T\mathbf{v}+d^2)\\
@@ -175,7 +160,7 @@ Q(\mathbf{v}) &= D^2(\mathbf{v})
 
 \section{How to Select Edges Quadric accumulation}
 \begin{frame}
-\frametitle{Basic Algorithm}
+\frametitle{Garland's Basic Algorithm}
 \centering
 \begin{enumerate}
 \color{gray}
@@ -216,6 +201,10 @@ Q(\mathbf{v}) &= D^2(\mathbf{v})
 Q_i(\mathbf{v}) + Q_j(\mathbf{v}) &= (\mathbf{A_i} + \mathbf{A_j}, \mathbf{b_i} + \mathbf{b_j}, c_i + c_j)\\
 E_Q(\mathbf{v}) &= \sum_{i} D_i^2(\mathbf{v}) = \sum_{i} Q_i(\mathbf{v}) = Q(\mathbf{v})
 \end{align}
+\begin{figure}[ht]
+	\centering
+    \includegraphics[width=0.4\textwidth]{small_mesh}
+\end{figure}
 \end{frame}
 
 \section{How to Select Edges Quadric accumulation}
@@ -310,41 +299,18 @@ Solving for $\nabla Q(\mathbf{v}) = 0$, the optimal position is defined:
 \begin{center}
 To improve simplification more attributes are incorporated in the joint optimization. Using additionally, color and normals approximations are much closer to the desired goal.
 \begin{align}
-\mathbf{v} &= [x \ y \ z \ r \ g \ b]^T\\
-T &= (\mathbf{p}, \mathbf{q}, \mathbf{r})\\ 
-\mathbf{h} &= \mathbf{q} - \mathbf{p}\\
-\mathbf{k} &= \mathbf{r} - \mathbf{p}
+\mathbf{v} &= [x \ y \ z \ r \ g \ b]^T
 \end{align}
-\end{center}
-\end{frame}
-
-\section{Plane}
-\begin{frame}
-\frametitle{Plane in $\mathbb{R}^n$}
-\centering
-\begin{align}
-\mathbf{e_1} &= \mathbf{h} / \norm{\mathbf{h}} \\
-\mathbf{e_2} &= \frac{\mathbf{k} - (\mathbf{e_1} \cdot \mathbf{k})\mathbf{e_1}}{\norm{\mathbf{k} - (\mathbf{e_1} \cdot \mathbf{k})\mathbf{e_1}}}
-\end{align}
-\begin{figure}[ht]
-\centering
-\includegraphics[width=0.8\textwidth]{gram}
-\end{figure}
-\end{frame}
-
-\section{Extended version parameters}
-\begin{frame}
-\frametitle{Number of Parameters}
-\centering
 \begin{figure}[ht]
 \centering
 \includegraphics[width=1\textwidth]{params_table}
 \end{figure}
+\end{center}
 \end{frame}
 
-\section{Results}
+\section{Results [Geometry, Color]}
 \begin{frame}
-\frametitle{Results}
+\frametitle{Results [Geometry, Color]}
 \centering
 \begin{figure}[ht]
 \centering
@@ -352,9 +318,9 @@ T &= (\mathbf{p}, \mathbf{q}, \mathbf{r})\\
 \end{figure}
 \end{frame}
 
-\section{Results}
+\section{Results [Geometry, Color]}
 \begin{frame}
-\frametitle{Results}
+\frametitle{Results [Geometry, Color]}
 \centering
 \begin{figure}[ht]
 \centering
@@ -362,9 +328,9 @@ T &= (\mathbf{p}, \mathbf{q}, \mathbf{r})\\
 \end{figure}
 \end{frame}
 
-\section{Results}
+\section{Results [Geometry, Color]}
 \begin{frame}
-\frametitle{Results}
+\frametitle{Results [Geometry, Color]}
 \centering
 \begin{figure}[ht]
 \centering
@@ -372,9 +338,9 @@ T &= (\mathbf{p}, \mathbf{q}, \mathbf{r})\\
 \end{figure}
 \end{frame}
 
-\section{Results}
+\section{Results [Geometry, Color with noise)]}
 \begin{frame}
-\frametitle{Results}
+\frametitle{Results [Geometry, Color with noise)]}
 \centering
 \begin{figure}[ht]
 \centering
@@ -382,14 +348,36 @@ T &= (\mathbf{p}, \mathbf{q}, \mathbf{r})\\
 \end{figure}
 \end{frame}
 
-\section{Results}
+\section{Results [Geometry, Color, Normals]}
 \begin{frame}
-\frametitle{Results}
+\frametitle{Results [Geometry, Color, Normals]}
 \centering
 \begin{figure}[ht]
 \centering
 \includegraphics[width=10cm,height=6cm]{desk}
 \end{figure}
+\end{frame}
+
+\section{Algorithm Modifications}
+\begin{frame}
+\frametitle{Algorithm Modifications}
+\centering
+How to target the simplification in a way to decimate most of planar surfaces?\\~\\
+Adaptive thresholding based on the quadric metrics with heap rebuilding after each iteration.
+\end{frame}
+
+\section{Adaptive thresholding}
+\begin{frame}
+\frametitle{Adaptive thresholding}
+When to stop the current iteration?
+\centering
+\begin{align}
+error(i)=10^{-9}\cdot(i+3)^a
+\label{error_formula}
+\end{align}
+where $i$ is the current iteration and $a$ is the aggressiveness.\\~\\
+The best results for geometry gives value $a=3$ and for the rest of attributes $a=5$ is used.\\~\\
+Setting $a$ to infinity gives the standard Garland's algorithm.
 \end{frame}
 
 \section{Parallel Iterative Adaptive Thresholding}
@@ -398,21 +386,9 @@ T &= (\mathbf{p}, \mathbf{q}, \mathbf{r})\\
 \centering
 \begin{enumerate}
 \item Smooth mesh using Taubin's algorithm (optional).
-\item Cluster the mesh:
-\begin{enumerate}
-\item Split the mesh according to number of selected clusters; for example 2x2x2=8.
-\item Add a task for each cluster to the queue.
-\end{enumerate}
-\item Wait for all threads from the thread-pool to finish processing simplification algorithm [QSlim] ran on all clusters. Each thread does:
-\begin{enumerate}
-\item Build the heap with edges.
-\item Decimate edges till reaching the threshold level.
-\end{enumerate}
-\item Update the mesh structure:
-\begin{enumerate}
-\item Remove faces flagged as invalid.
-\item Reset properties for each remaining face and vertex.
-\end{enumerate}
+\item Cluster the mesh.
+\item Wait for all threads from the thread-pool to finish processing simplification algorithm [QSlim] ran on all clusters.
+\item Update the mesh structure.
 \item Repeat from the second step till convergence.
 \end{enumerate}
 \end{frame}
@@ -638,9 +614,14 @@ The tests were performed on a machine with 32 GB of RAM and Intel i7-6700 CPU 3.
 \end{figure}
 \end{frame}
 
-\section{Questions?}
+\section{Summary}
 \begin{frame}
-\frametitle{Questions?}
+\frametitle{Summary}
+\end{frame}
+
+\section{Questions}
+\begin{frame}
+\frametitle{Questions}
 \end{frame}
 
 \end{document}

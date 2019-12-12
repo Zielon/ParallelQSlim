@@ -77,37 +77,37 @@
 \headcommand {\beamer@framepages {16}{16}}
 \headcommand {\beamer@sectionpages {16}{16}}
 \headcommand {\beamer@subsectionpages {16}{16}}
-\headcommand {\sectionentry {16}{Plane}{17}{Plane}{0}}
+\headcommand {\sectionentry {16}{Results [Geometry, Color]}{17}{Results [Geometry, Color]}{0}}
 \headcommand {\slideentry {16}{0}{1}{17/17}{}{0}}
 \headcommand {\beamer@framepages {17}{17}}
 \headcommand {\beamer@sectionpages {17}{17}}
 \headcommand {\beamer@subsectionpages {17}{17}}
-\headcommand {\sectionentry {17}{Extended version parameters}{18}{Extended version parameters}{0}}
+\headcommand {\sectionentry {17}{Results [Geometry, Color]}{18}{Results [Geometry, Color]}{0}}
 \headcommand {\slideentry {17}{0}{1}{18/18}{}{0}}
 \headcommand {\beamer@framepages {18}{18}}
 \headcommand {\beamer@sectionpages {18}{18}}
 \headcommand {\beamer@subsectionpages {18}{18}}
-\headcommand {\sectionentry {18}{Results}{19}{Results}{0}}
+\headcommand {\sectionentry {18}{Results [Geometry, Color]}{19}{Results [Geometry, Color]}{0}}
 \headcommand {\slideentry {18}{0}{1}{19/19}{}{0}}
 \headcommand {\beamer@framepages {19}{19}}
 \headcommand {\beamer@sectionpages {19}{19}}
 \headcommand {\beamer@subsectionpages {19}{19}}
-\headcommand {\sectionentry {19}{Results}{20}{Results}{0}}
+\headcommand {\sectionentry {19}{Results [Geometry, Color with noise)]}{20}{Results [Geometry, Color with noise)]}{0}}
 \headcommand {\slideentry {19}{0}{1}{20/20}{}{0}}
 \headcommand {\beamer@framepages {20}{20}}
 \headcommand {\beamer@sectionpages {20}{20}}
 \headcommand {\beamer@subsectionpages {20}{20}}
-\headcommand {\sectionentry {20}{Results}{21}{Results}{0}}
+\headcommand {\sectionentry {20}{Results [Geometry, Color, Normals]}{21}{Results [Geometry, Color, Normals]}{0}}
 \headcommand {\slideentry {20}{0}{1}{21/21}{}{0}}
 \headcommand {\beamer@framepages {21}{21}}
 \headcommand {\beamer@sectionpages {21}{21}}
 \headcommand {\beamer@subsectionpages {21}{21}}
-\headcommand {\sectionentry {21}{Results}{22}{Results}{0}}
+\headcommand {\sectionentry {21}{Algorithm Modifications}{22}{Algorithm Modifications}{0}}
 \headcommand {\slideentry {21}{0}{1}{22/22}{}{0}}
 \headcommand {\beamer@framepages {22}{22}}
 \headcommand {\beamer@sectionpages {22}{22}}
 \headcommand {\beamer@subsectionpages {22}{22}}
-\headcommand {\sectionentry {22}{Results}{23}{Results}{0}}
+\headcommand {\sectionentry {22}{Adaptive thresholding}{23}{Adaptive thresholding}{0}}
 \headcommand {\slideentry {22}{0}{1}{23/23}{}{0}}
 \headcommand {\beamer@framepages {23}{23}}
 \headcommand {\beamer@sectionpages {23}{23}}
@@ -192,11 +192,16 @@
 \headcommand {\beamer@framepages {39}{39}}
 \headcommand {\beamer@sectionpages {39}{39}}
 \headcommand {\beamer@subsectionpages {39}{39}}
-\headcommand {\sectionentry {39}{Questions?}{40}{Questions?}{0}}
+\headcommand {\sectionentry {39}{Summary}{40}{Summary}{0}}
 \headcommand {\slideentry {39}{0}{1}{40/40}{}{0}}
 \headcommand {\beamer@framepages {40}{40}}
-\headcommand {\beamer@partpages {1}{40}}
-\headcommand {\beamer@subsectionpages {40}{40}}
 \headcommand {\beamer@sectionpages {40}{40}}
-\headcommand {\beamer@documentpages {40}}
-\headcommand {\gdef \inserttotalframenumber {40}}
+\headcommand {\beamer@subsectionpages {40}{40}}
+\headcommand {\sectionentry {40}{Questions}{41}{Questions}{0}}
+\headcommand {\slideentry {40}{0}{1}{41/41}{}{0}}
+\headcommand {\beamer@framepages {41}{41}}
+\headcommand {\beamer@partpages {1}{41}}
+\headcommand {\beamer@subsectionpages {41}{41}}
+\headcommand {\beamer@sectionpages {41}{41}}
+\headcommand {\beamer@documentpages {41}}
+\headcommand {\gdef \inserttotalframenumber {41}}
