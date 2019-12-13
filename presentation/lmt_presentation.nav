@@ -195,13 +195,8 @@
 \headcommand {\sectionentry {39}{Summary}{40}{Summary}{0}}
 \headcommand {\slideentry {39}{0}{1}{40/40}{}{0}}
 \headcommand {\beamer@framepages {40}{40}}
-\headcommand {\beamer@sectionpages {40}{40}}
+\headcommand {\beamer@partpages {1}{40}}
 \headcommand {\beamer@subsectionpages {40}{40}}
-\headcommand {\sectionentry {40}{Questions}{41}{Questions}{0}}
-\headcommand {\slideentry {40}{0}{1}{41/41}{}{0}}
-\headcommand {\beamer@framepages {41}{41}}
-\headcommand {\beamer@partpages {1}{41}}
-\headcommand {\beamer@subsectionpages {41}{41}}
-\headcommand {\beamer@sectionpages {41}{41}}
-\headcommand {\beamer@documentpages {41}}
-\headcommand {\gdef \inserttotalframenumber {41}}
+\headcommand {\beamer@sectionpages {40}{40}}
+\headcommand {\beamer@documentpages {40}}
+\headcommand {\gdef \inserttotalframenumber {40}}
