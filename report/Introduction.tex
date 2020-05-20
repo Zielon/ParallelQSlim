@@ -1,6 +1,0 @@
-\chapter{Introduction}
-\pagenumbering{arabic}%Ab hier, werden arabische Zahlen benutzt
-\setcounter{page}{1}%Mit Abschnitt 1 beginnt die Seitennummerierung neu.
-\thispagestyle{empty}
-
-Mesh simplification is necessary when one wants to reduce the size of a mesh while still preserving geometry. The technique is widely used in computer graphics to change the model level of details \cite{lod03}. This project elaborates a specific case of mesh simplification, where the focus is mostly on planar surfaces, like walls and floors, at the same time, keeping high level of details for complex shapes; plants, elements on desks in an office, etc. Mesh reconstruction in general introduces a problem of using the same level of details for the whole $3D$ space. Most of planar surfaces can be described with reduced amount of triangles. Therefore, after generating a reconstructed mesh from real-world environments, mapped by static or mobile scanners, we can successfully apply simplification with great results. In the next chapter, I will elaborate foundations for the geometric error metric. Forwarded by the introduction to the extended version of this algorithm, which additionally uses color and normals for the error metric. Finally, in the forth chapter, I will describe the parallel approach with adaptive thresholding to solve the problem.
