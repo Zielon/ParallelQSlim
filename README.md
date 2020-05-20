@@ -36,4 +36,6 @@ Allowed options:
                                    maximum permissive error) [1.0-10.0]
 ```
 
-![output_1](https://github.com/Zielon/QSlim/blob/master/data/simply_9.jpg)
+Below you can see how the algorithm works iteratively.
+
+![output_1](https://github.com/Zielon/QSlim/blob/master/data/simply_9.gif)
