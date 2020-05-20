@@ -5,6 +5,8 @@ This work elaborates a new parallel algorithm based on quadric error metric and 
 
 Here you can read the [report](https://github.com/Zielon/QSlim/blob/master/data/Report.pdf) which summarizes the whole work.
 
+![output_1](https://github.com/Zielon/QSlim/blob/master/data/simply_9.gif)
+
 ```
 Usage:
      nv_simplify_mesh --in <fine_mesh> --out <simplified_mesh> [options]
@@ -37,5 +39,3 @@ Allowed options:
   -a [ --aggressiveness ] arg (=3) Aggressiveness (directly relates to the 
                                    maximum permissive error) [1.0-10.0]
 ```
-
-![output_1](https://github.com/Zielon/QSlim/blob/master/data/simply_9.jpg)
