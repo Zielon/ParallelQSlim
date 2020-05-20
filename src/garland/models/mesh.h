@@ -39,6 +39,8 @@ namespace garland {
          */
         void update();
 
+        std::shared_ptr<Mesh> getCopy();
+
         void reindex();
 
         void updateBorders();

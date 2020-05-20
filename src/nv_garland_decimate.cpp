@@ -30,15 +30,6 @@ void help(const bpo::options_description &opt) {
               << std::endl;
 }
 
-std::istream &operator>>(std::istream &in, garland::Weighting &weighting) {
-    std::string token;
-    in >> token;
-    if (token == "0") weighting = garland::Weighting::none;
-    else if (token == "1") weighting = garland::Weighting::area;
-    else in.setstate(std::ios_base::failbit);
-    return in;
-}
-
 int main(int argc, char const *argv[]) {
     bpo::variables_map vm;
     bpo::options_description opts("Allowed options");
