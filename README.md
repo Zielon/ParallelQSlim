@@ -3,6 +3,10 @@ Parallel mesh simplification algorithm
 
 This work elaborates a new parallel algorithm based on quadric error metric and adaptive thresholding to simplify a triangle mesh. The approach emphasizes planar surfaces as a target to simplify. The main goal was to create a framework able to produce high quality progressive meshes for browser streaming purposes.
 
+Below you can see how the algorithm works iteratively.
+
+![output_1](https://github.com/Zielon/QSlim/blob/master/data/simply_9.gif)
+
 ```
 Usage:
      nv_simplify_mesh --in <fine_mesh> --out <simplified_mesh> [options]
@@ -35,7 +39,3 @@ Allowed options:
   -a [ --aggressiveness ] arg (=3) Aggressiveness (directly relates to the 
                                    maximum permissive error) [1.0-10.0]
 ```
-
-Below you can see how the algorithm works iteratively.
-
-![output_1](https://github.com/Zielon/QSlim/blob/master/data/simply_9.gif)
