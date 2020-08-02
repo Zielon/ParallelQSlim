@@ -1,7 +1,7 @@
 #ifndef MESH_RECONSTRUCTION_QUADRIC_H
 #define MESH_RECONSTRUCTION_QUADRIC_H
 
-#include <Eigen/Dense>
+#include <eigen3/Eigen/Dense>
 #include <memory>
 #include <iostream>
 

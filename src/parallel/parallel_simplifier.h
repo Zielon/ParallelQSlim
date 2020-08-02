@@ -12,7 +12,6 @@
 #include "../partition/partitioner.h"
 #include "../garland/models/mesh.h"
 #include "../garland/q_slim.h"
-#include "../smooth/taubin.hpp"
 
 namespace parallel {
 

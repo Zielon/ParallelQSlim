@@ -1,7 +1,7 @@
 #ifndef MESH_RECONSTRUCTION_FAST_PLY_READER_H
 #define MESH_RECONSTRUCTION_FAST_PLY_READER_H
 
-#include "fastply.h"
+#include "../external/fastply.h"
 #include "fastply_datalayouts.h"
 
 #include "mesh_reader.h"

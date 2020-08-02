@@ -1,6 +1,3 @@
-#include "timer.h"
-#include "boost_argument_helpers.h"
-
 #include <boost/filesystem.hpp>
 #include <memory>
 #include <boost/program_options.hpp>
@@ -14,7 +11,6 @@
 #include "garland/models/quadric/9x9/quadric9.h"
 #include "partition/basic/basic_partitioner.h"
 #include "parallel/parallel_simplifier.h"
-#include "smooth/taubin.hpp"
 
 namespace bfs = boost::filesystem;
 namespace bpo = boost::program_options;
@@ -62,21 +58,21 @@ int main(int argc, char const *argv[]) {
                  "Quadric error weighting strategy\n 0 = none\n 1 = area\n")
 
                 // --reduction, -r
-                ("reduction,r", bpo::value<int>()->default_value(0),
+                ("reduction,r", bpo::value<int>()->default_value(75),
                  "The percentage reduction which we want to achieve; e.g. 10 of the input mesh")
 
                 // --max-iter, -i
-                ("max-iter,i", bpo::value<int>()->default_value(1), "Max iterations to perform")
+                ("max-iter,i", bpo::value<int>()->default_value(10), "Max iterations to perform")
 
                 // --threads, -t
-                ("threads,t", bpo::value<int>()->default_value(1), "Number of threads")
+                ("threads,t", bpo::value<int>()->default_value(4), "Number of threads")
 
                 // --quadric, -q
                 ("quadric,q", bpo::value<int>()->default_value(3),
                  "Type of quadric metric\n 3 = [geometry]\n 6 = [geometry, color]\n 9 = [geometry, color, normal]\n")
 
                 // --clusters, -c
-                ("clusters,c", bpo::value<int>()->default_value(1),
+                ("clusters,c", bpo::value<int>()->default_value(2),
                  "Number of clusters e.g.\n 2 will be 2x2x2=8, 3x3x3=27 clusters")
 
                 // --attributes, -m
@@ -84,8 +80,7 @@ int main(int argc, char const *argv[]) {
                  "Input mesh attributes\n 1 = [geometry]\n 2 = [geometry, color, normal]")
 
                 // --aggressiveness, -a
-                ("aggressiveness,a", bpo::value<float>()->default_value(3.0)->notifier(
-                        boost::bind(&boost_args::check_range<float>, _1, 1.0f, 10.0f)),
+                ("aggressiveness,a", bpo::value<float>()->default_value(4.5),
                  "Aggressiveness (directly relates to the maximum permissive error) [1.0-10.0]");
 
         bpo::store(bpo::command_line_parser(argc, argv).options(opts).run(), vm);
@@ -158,7 +153,6 @@ int main(int argc, char const *argv[]) {
      */
     if (vm["smooth"].as<bool>() && vm["quadric"].as<int>() == 3) {
         auto mesh_smoothed = mesh_in.substr(0, mesh_in.size() - 4) + "_smoothed.ply";
-        smooth(mesh_in, mesh_smoothed, true, 7);
         read(mesh, mesh_smoothed);
         if (std::remove(mesh_smoothed.c_str()) != 0)
             fprintf(stderr, "[ERROR] File %s was not removed!\n", mesh_smoothed.c_str());
@@ -168,9 +162,6 @@ int main(int argc, char const *argv[]) {
         read(mesh, mesh_in);
 
     auto parallel = std::make_unique<parallel::ParallelSimplifier<partition::BasicPartitioner, int>>(mesh);
-
-    INIT_TIMER(total)
-    START_TIMER(total)
 
     switch (vm["quadric"].as<int>()) {
         case 3:
@@ -188,9 +179,4 @@ int main(int argc, char const *argv[]) {
     }
 
     save(mesh, mesh_out);
-
-//    if (vm["smooth"].as<bool>() && vm["quadric"].as<int>() == 3)
-//        smooth(mesh_out, mesh_out, false, 1);
-
-    FINISH_AND_PRINT_TIMER(total, "Total processing time")
 }
