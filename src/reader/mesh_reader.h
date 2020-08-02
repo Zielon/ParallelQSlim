@@ -17,7 +17,8 @@ namespace reader {
         /**
          * Read with a configurable lambda function for creation a vertex with selected parameters
          */
-        virtual void read(const std::string &, Mesh &, std::function<std::shared_ptr<garland::Vertex>(InVertex, int)>) = 0;
+        virtual void
+        read(const std::string &, Mesh &, std::function<std::shared_ptr<garland::Vertex>(InVertex, int)>) = 0;
 
         /**
          * Save vertices with properties set in the lambda functions

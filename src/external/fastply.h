@@ -47,23 +47,23 @@ namespace fastply {
  * @param filename Path to file
  * @return Size in bytes, or -1 upon failure
  */
-    inline std::size_t getFileSize(const std::string& filename) noexcept {
+    inline std::size_t getFileSize(const std::string &filename) noexcept {
         struct ::stat st;
         int rc = stat(filename.c_str(), &st);
         return rc == 0 ? st.st_size : 0;
     }
 
-    template <typename T>
+    template<typename T>
     class PlyElementContainer {
     public:
         using value_type = T;
         using difference_type = std::ptrdiff_t;
-        using pointer = T*;
-        using const_pointer = const T*;
-        using reference = T&;
-        using const_reference = const T&;
-        using iterator = T*;
-        using const_iterator = const T*;
+        using pointer = T *;
+        using const_pointer = const T *;
+        using reference = T &;
+        using const_reference = const T &;
+        using iterator = T *;
+        using const_iterator = const T *;
 
         constexpr const_reference operator[](std::size_t i) const {
             return begin_[i];
@@ -100,11 +100,12 @@ namespace fastply {
         const_pointer begin_ = nullptr;
         const_pointer end_ = nullptr;
 
-        template <typename... Args>
-        friend class FastPly;
+        template<typename... Args>
+        friend
+        class FastPly;
     };
 
-    template <typename... Args>
+    template<typename... Args>
     class FastPly {
         static_assert(
                 sizeof...(Args),
@@ -115,10 +116,11 @@ namespace fastply {
 
         ~FastPly() { close(); };
 
-        FastPly(const FastPly&) = delete;
-        FastPly& operator=(const FastPly&) = delete;
+        FastPly(const FastPly &) = delete;
 
-        bool open(const std::string& path);
+        FastPly &operator=(const FastPly &) = delete;
+
+        bool open(const std::string &path);
 
         void close();
 
@@ -132,24 +134,24 @@ namespace fastply {
 
         std::size_t numberElements() const noexcept { return num_element_definitions; }
 
-        const auto& getElements() const noexcept { return elements_; }
+        const auto &getElements() const noexcept { return elements_; }
 
-        template <typename T>
-        const auto& get() const noexcept {
+        template<typename T>
+        const auto &get() const noexcept {
             return std::get<PlyElementContainer<T>>(elements_);
         }
 
-        template <std::size_t I>
-        const auto& get() const noexcept {
+        template<std::size_t I>
+        const auto &get() const noexcept {
             return std::get<I>(elements_);
         }
 
     private:
         bool parseHeader();
 
-        bool readEncoding(std::istream& is);
+        bool readEncoding(std::istream &is);
 
-        bool readElementDefinition(std::istream& is);
+        bool readElementDefinition(std::istream &is);
 
 #if defined(__cplusplus) && (__cplusplus == 201402L)
         template <std::size_t idx>
@@ -166,10 +168,10 @@ namespace fastply {
 
 #endif
 
-        template <typename T, typename... Ts>
+        template<typename T, typename... Ts>
         void setupElements();
 
-        template <typename T, typename... Ts>
+        template<typename T, typename... Ts>
         void resetElements();
 
         std::string path_ = "";                //!< Path to input ply file
@@ -186,11 +188,11 @@ namespace fastply {
                 {};  //!< Num. elements per element definition
 
         std::size_t file_length_;
-        void* ptr_mapped_file_ = nullptr;  //!< Ptr to start of mmap'ed file
+        void *ptr_mapped_file_ = nullptr;  //!< Ptr to start of mmap'ed file
     };
 
-    template <typename... Args>
-    bool FastPly<Args...>::open(const std::string& path) {
+    template<typename... Args>
+    bool FastPly<Args...>::open(const std::string &path) {
         if (!num_element_definitions)
             return false;
 
@@ -227,7 +229,7 @@ namespace fastply {
         return true;
     }
 
-    template <typename... Args>
+    template<typename... Args>
     void FastPly<Args...>::close() {
         // Freeind mmaped memory
         if (ptr_mapped_file_ != nullptr) {
@@ -249,7 +251,7 @@ namespace fastply {
         resetElements<Args...>();
     }
 
-    template <typename... Args>
+    template<typename... Args>
     bool FastPly<Args...>::parseHeader() {
         std::ifstream is(path_, std::ios::binary);
         if (is.fail())
@@ -301,8 +303,8 @@ namespace fastply {
         return true;
     }
 
-    template <typename... Args>
-    bool FastPly<Args...>::readEncoding(std::istream& is) {
+    template<typename... Args>
+    bool FastPly<Args...>::readEncoding(std::istream &is) {
         std::string s;
         (is >> s);
         if (s == "binary_little_endian")
@@ -314,8 +316,8 @@ namespace fastply {
         return true;
     }
 
-    template <typename... Args>
-    bool FastPly<Args...>::readElementDefinition(std::istream& is) {
+    template<typename... Args>
+    bool FastPly<Args...>::readElementDefinition(std::istream &is) {
         // If we read more element definition keywords than defined
         if (num_parsed_elements_ >= num_element_definitions) {
             throw std::runtime_error(
@@ -395,22 +397,22 @@ void FastPly<Args...>::resetElements() {
 
 #else
 
-    template <typename... Args>
-    template <typename T, typename... Ts>
+    template<typename... Args>
+    template<typename T, typename... Ts>
     void FastPly<Args...>::setupElements() {
         // Index of current element to setup
         constexpr int idx = sizeof...(Args) - sizeof...(Ts) - 1;
 
         // Get element and fill in the size
-        auto& el = std::get<idx>(elements_);
+        auto &el = std::get<idx>(elements_);
         el.size_ = element_count_[idx];
 
-        unsigned char const* start;
+        unsigned char const *start;
         if constexpr (idx == 0) {
             start =
-                    static_cast<unsigned char const*>(ptr_mapped_file_) + header_length_;
+                    static_cast<unsigned char const *>(ptr_mapped_file_) + header_length_;
         } else {
-            start = reinterpret_cast<unsigned char const*>(
+            start = reinterpret_cast<unsigned char const *>(
                     std::get<(idx - 1)>(elements_).end_);
         }
 
@@ -422,14 +424,14 @@ void FastPly<Args...>::resetElements() {
         }
     }
 
-    template <typename... Args>
-    template <typename T, typename... Ts>
+    template<typename... Args>
+    template<typename T, typename... Ts>
     void FastPly<Args...>::resetElements() {
         // Index of current element to setup
         constexpr int idx = sizeof...(Args) - sizeof...(Ts) - 1;
 
         // Get element and fill in the size
-        auto& el = std::get<idx>(elements_);
+        auto &el = std::get<idx>(elements_);
         el.size_ = 0;
         el.begin_ = nullptr;
         el.end_ = nullptr;
@@ -438,6 +440,7 @@ void FastPly<Args...>::resetElements() {
             resetElements<Ts...>();
         }
     }
+
 #endif
 
 }  // namespace fastply

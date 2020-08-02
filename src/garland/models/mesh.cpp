@@ -13,7 +13,7 @@ std::shared_ptr<garland::Mesh> garland::Mesh::getCopy() {
     auto references = std::map<int, int>();
 
     int i = 0;
-    for(auto &pair : vertices){
+    for (auto &pair : vertices) {
         auto vertex = pair.second;
         references[vertex->getId()] = i;
         mesh->insert(std::make_shared<Vertex>(vertex->getPosition(), vertex->getNormal(), vertex->getColor(), i));
@@ -21,7 +21,7 @@ std::shared_ptr<garland::Mesh> garland::Mesh::getCopy() {
     }
 
     i = 0;
-    for(auto& pair : faces){
+    for (auto &pair : faces) {
         auto face = pair.second;
         mesh->insert(std::make_shared<Face>(
                 references[face->getVertex(0)],

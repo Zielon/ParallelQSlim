@@ -59,7 +59,7 @@ namespace garland {
             return b.dot(v) + c;
         };
 
-        void add(const std::shared_ptr<Quadric>& q) {
+        void add(const std::shared_ptr<Quadric> &q) {
             if (!q) return;
             A += q->A;
             b += q->b;
