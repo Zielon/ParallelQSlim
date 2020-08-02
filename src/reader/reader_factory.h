@@ -23,15 +23,15 @@ namespace reader {
 
                 if (attributes == MeshAttributes::geometry) {
 
-                    reader::FastPlyReader<navvis::VertexUntexturedReconstruction, navvis::FaceUntexturedReconstruction> reader;
-                    reader.read(path, mesh, [](navvis::VertexUntexturedReconstruction v, int id) {
+                    reader::FastPlyReader<VertexUntexturedReconstruction, FaceUntexturedReconstruction> reader;
+                    reader.read(path, mesh, [](VertexUntexturedReconstruction v, int id) {
                         return std::make_shared<garland::Vertex>(v.x, v.y, v.z, id);
                     });
 
                 } else if (attributes == MeshAttributes::geometry_color_normal) {
 
-                    reader::FastPlyReader<navvis::Vertex9x9Reconstruction, navvis::FaceUntexturedReconstruction> reader;
-                    reader.read(path, mesh, [](navvis::Vertex9x9Reconstruction v, int id) {
+                    reader::FastPlyReader<Vertex9x9Reconstruction, FaceUntexturedReconstruction> reader;
+                    reader.read(path, mesh, [](Vertex9x9Reconstruction v, int id) {
                         return std::make_shared<garland::Vertex>(
                                 /* Position */ v.x, v.y, v.z,
                                 /* Color */ double(v.red) / 255.0, double(v.green) / 255.0, double(v.blue) / 255.0,
@@ -47,7 +47,7 @@ namespace reader {
 
                 if (attributes == MeshAttributes::geometry) {
 
-                    reader::FastPlyReader<navvis::VertexUntexturedReconstruction, navvis::FaceUntexturedReconstruction> reader;
+                    reader::FastPlyReader<VertexUntexturedReconstruction, FaceUntexturedReconstruction> reader;
 
                     auto writeHeader = [](std::ofstream &out) {
                         out << "property float x" << std::endl;
@@ -65,7 +65,7 @@ namespace reader {
 
                 } else if (attributes == MeshAttributes::geometry_color_normal) {
 
-                    reader::FastPlyReader<navvis::Vertex9x9Reconstruction, navvis::FaceUntexturedReconstruction> reader;
+                    reader::FastPlyReader<Vertex9x9Reconstruction, FaceUntexturedReconstruction> reader;
 
                     auto writeHeader = [](std::ofstream &out) {
                         out << "property float x" << std::endl;

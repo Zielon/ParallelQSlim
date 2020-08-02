@@ -25,7 +25,7 @@ namespace bpo = boost::program_options;
 void help(const bpo::options_description &opt) {
     std::cout << std::endl
               << "Usage:\n"
-              << "     nv_simplify_mesh --in <fine_mesh> --out <simplified_mesh> [options]\n\n"
+              << "     simplify_mesh --in <fine_mesh> --out <simplified_mesh> [options]\n\n"
               << opt << '\n'
               << std::endl;
 }
@@ -85,7 +85,7 @@ int main(int argc, char const *argv[]) {
 
                 // --aggressiveness, -a
                 ("aggressiveness,a", bpo::value<float>()->default_value(3.0)->notifier(
-                        boost::bind(&navvis::boost_args::check_range<float>, _1, 1.0f, 10.0f)),
+                        boost::bind(&boost_args::check_range<float>, _1, 1.0f, 10.0f)),
                  "Aggressiveness (directly relates to the maximum permissive error) [1.0-10.0]");
 
         bpo::store(bpo::command_line_parser(argc, argv).options(opts).run(), vm);

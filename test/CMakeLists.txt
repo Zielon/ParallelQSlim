@@ -13,7 +13,7 @@
 # Utility library for the tests
 # -----------------------------------------------------------------------------
 add_library(meshutils STATIC mesh_utils.h)
-target_link_libraries(meshutils navvis_gtest) # make tests link against gtest
+target_link_libraries(meshutils tests) # make tests link against gtest
 
 ##=============================================================================
 ## Add the tests themselves

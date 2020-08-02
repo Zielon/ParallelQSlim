@@ -64,7 +64,6 @@ namespace reader {
 
             out << "ply" << std::endl;
             out << "format ascii 1.0" << std::endl;
-            out << "comment author: NavVis" << std::endl;
 
             out << "element vertex " + std::to_string(mesh.getVertices().size()) << std::endl;
             headerWrite(out);
