@@ -6,8 +6,7 @@ This work elaborates a new parallel algorithm based on quadric error metric and 
 The project needs two libraries:
 ```
 Installation:
-    sudo apt-get install libboost-all-dev
-    sudo apt install libeigen3-dev
+    sudo apt-get install libboost-all-dev libeigen3-dev
 ```
 
 Here you can read the [report](https://github.com/Zielon/QSlim/blob/master/report/report.pdf) which summarizes the whole work.
@@ -18,7 +17,7 @@ Default reader accepts as an input mesh only those with binary encoding.
 
 ```
 Usage:
-     main --in ../resources/armadillo.ply --out ../output/simply.ply -f
+     main --in ../resources/armadillo.ply --out ../output/simply.ply -f -a 6.5 -c 2 -t 8 -r 15
 
 Allowed options:
   -h [ --help ]                    Produce help message

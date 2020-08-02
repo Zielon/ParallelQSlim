@@ -2,10 +2,8 @@ cmake_minimum_required(VERSION 3.16 FATAL_ERROR)
 project(simplify_mesh)
 
 set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
-set(THREADS_PREFER_PTHREAD_FLAG ON)
+set(CMAKE_CXX_FLAGS_RELEASE -O3)
 
-find_package(Threads REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(Boost REQUIRED COMPONENTS filesystem program_options system thread)
 
@@ -43,4 +41,4 @@ add_executable(main
         src/main.cpp
         )
 
-target_link_libraries(main Eigen3::Eigen Threads::Threads ${Boost_LIBRARIES})
+target_link_libraries(main Eigen3::Eigen ${Boost_LIBRARIES})

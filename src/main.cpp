@@ -58,7 +58,7 @@ int main(int argc, char const *argv[]) {
                  "Quadric error weighting strategy\n 0 = none\n 1 = area\n")
 
                 // --reduction, -r
-                ("reduction,r", bpo::value<int>()->default_value(75),
+                ("reduction,r", bpo::value<int>()->default_value(25),
                  "The percentage reduction which we want to achieve; e.g. 10 of the input mesh")
 
                 // --max-iter, -i
