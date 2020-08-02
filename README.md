@@ -10,9 +10,9 @@ Installation:
     sudo apt install libeigen3-dev
 ```
 
-Here you can read the [report](https://github.com/Zielon/QSlim/blob/master/data/Report.pdf) which summarizes the whole work.
+Here you can read the [report](https://github.com/Zielon/QSlim/blob/master/report/report.pdf) which summarizes the whole work.
 
-![output_1](https://github.com/Zielon/QSlim/blob/master/data/simply_9.gif)
+![output_1](https://github.com/Zielon/QSlim/blob/master/report/simply_9.gif)
 
 Default reader accepts as an input mesh only those with binary encoding.
 
