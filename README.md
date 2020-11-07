@@ -24,8 +24,14 @@ Default reader accepts as an input mesh only those with binary encoding.
 
 ```
 Usage:
-     main --in ../resources/armadillo.ply --out ../output/simply.ply -f -a 7.5 -c 2 -t 4 -r 8
+mkdir build
+cd build
+cmake ../
+make -j 4
+./main --in ../resources/armadillo.ply --out ../output/simply.ply -f -a 7.5 -c 2 -t 4 -r 8
+```
 
+```
 Allowed options:
   -h [ --help ]                    Produce help message
   --in arg                         Path fine input mesh
