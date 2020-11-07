@@ -212,7 +212,7 @@ namespace parallel {
             iterations = options["max-iter"].template as<int>();
             aggressiveness = options["aggressiveness"].template as<float>();
 
-            garland::QSlim::ERROR_LEVEL = getErrorLevel(0);
+            garland::QSlim::ERROR_LEVEL = getErrorLevel(1);
 
             masterMesh.updateBorders();
 

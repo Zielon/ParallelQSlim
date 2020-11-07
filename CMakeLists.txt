@@ -5,12 +5,14 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_FLAGS_RELEASE -O3)
 
 find_package(Eigen3 REQUIRED)
-find_package(Boost REQUIRED COMPONENTS filesystem program_options system thread)
+find_package(Boost COMPONENTS filesystem program_options system thread REQUIRED)
 
 include_directories(${Boost_INCLUDE_DIRS})
 link_directories(${Boost_LIBRARY_DIRS})
 
-add_executable(main
+add_executable(
+        main
+
         # GARLAND FOLDER
         src/garland/models/quadric/3x3/quadric3.cpp
         src/garland/models/quadric/6x6/quadric6.cpp
@@ -39,6 +41,6 @@ add_executable(main
         src/external/fastply_macros.h
 
         src/main.cpp
-        )
+)
 
 target_link_libraries(main Eigen3::Eigen ${Boost_LIBRARIES})

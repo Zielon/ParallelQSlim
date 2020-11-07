@@ -1,7 +1,14 @@
 # ParallelQSlim
 Parallel mesh simplification algorithm
 
-This work elaborates a new parallel algorithm based on quadric error metric and adaptive thresholding to simplify a triangle mesh. The approach emphasizes planar surfaces as a target to simplify. The main goal was to create a framework able to produce high quality progressive meshes for browser streaming purposes.
+This work elaborates a parallel algorithm based on quadric error metric and adaptive thresholding to simplify a triangle mesh. The approach emphasizes planar surfaces as a target to simplify. The main goal was to create a framework able to produce high quality progressive meshes for browser streaming purposes based on meshes reconstructed from environment.
+
+The project implements [QSlim algorithm](https://www.cs.cmu.edu/~garland/thesis/thesis.html) and extends it with parallel approach and global planar surfaces simplification. There are 3 available quadric metrics:
+```
+Geometry
+Color + Geometry
+Normals + Color + Geoemtry
+```
 
 The project needs two libraries:
 ```
@@ -17,7 +24,7 @@ Default reader accepts as an input mesh only those with binary encoding.
 
 ```
 Usage:
-     main --in ../resources/armadillo.ply --out ../output/simply.ply -f -a 6.5 -c 2 -t 8 -r 15
+     main --in ../resources/armadillo.ply --out ../output/simply.ply -f -a 7.5 -c 2 -t 4 -r 8
 
 Allowed options:
   -h [ --help ]                    Produce help message
