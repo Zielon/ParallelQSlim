@@ -1,9 +1,7 @@
 # ParallelQSlim
-Parallel mesh simplification algorithm
+Shape aware parallel mesh simplification algorithm
 
-This work elaborates a parallel algorithm based on quadric error metric and adaptive thresholding to simplify a triangle mesh. The approach emphasizes planar surfaces as a target to simplify. The main goal was to create a framework able to produce high quality progressive meshes for browser streaming purposes based on meshes reconstructed from environment.
-
-Check out discord [#general](https://discord.gg/Z5Y2tWr2xA) for more info or help.
+This work elaborates a parallel algorithm based on quadric error metric and adaptive thresholding to simplify a triangle mesh. The approach emphasizes planar surfaces as a target to simplify. The main goal was to create a framework able to produce high quality progressive meshes based on reconstructed ones from environment. Those meshes are characterized by constant resoulution of reconstruction, therefore storing vertices for planar surfaces evenly accros the shape, which is not necessary.
 
 The project implements [QSlim algorithm](https://www.cs.cmu.edu/~garland/thesis/thesis.html) and extends it with parallel approach and global planar surfaces simplification. There are 3 available quadric metrics:
 ```
@@ -17,6 +15,8 @@ The project needs two libraries:
 Installation:
     sudo apt-get install libboost-all-dev libeigen3-dev
 ```
+
+Check out discord [#general](https://discord.gg/Z5Y2tWr2xA) for more info or help.
 
 Here you can read the [report](https://github.com/Zielon/QSlim/blob/master/report/report.pdf) which summarizes the whole work.
 
