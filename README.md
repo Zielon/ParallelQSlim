@@ -16,7 +16,7 @@ Installation:
     sudo apt-get install libboost-all-dev libeigen3-dev
 ```
 
-Check out discord [#general](https://discord.gg/Z5Y2tWr2xA) for more info or help.
+Check out discord [#general](https://discord.gg/Z5Y2tWr2xA) for more info or help. ![discord](https://img.shields.io/discord/774657412405395506)
 
 Here you can read the [report](https://github.com/Zielon/QSlim/blob/master/report/report.pdf) which summarizes the whole work.
 
