@@ -3,6 +3,8 @@ Shape aware parallel mesh simplification algorithm
 
 This work elaborates a parallel algorithm based on quadric error metric and adaptive thresholding to simplify a triangle mesh. The approach emphasizes planar surfaces as a target to simplify. The main goal was to create a framework able to produce high quality progressive meshes based on reconstructed ones from environment. Those meshes are characterized by constant resoulution of reconstruction, therefore storing vertices for planar surfaces evenly accros the shape, which is not necessary.
 
+![output_1](https://github.com/Zielon/QSlim/blob/master/report/simply_9.gif)
+
 The project implements [QSlim algorithm](https://www.cs.cmu.edu/~garland/thesis/thesis.html) and extends it with parallel approach and global planar surfaces simplification. There are 3 available quadric metrics:
 ```
 Geometry
@@ -18,10 +20,7 @@ Installation:
 
 Check out discord [#general](https://discord.gg/Z5Y2tWr2xA) for more info or help. ![discord](https://img.shields.io/discord/774657412405395506)
 
-Here you can read the [report](https://github.com/Zielon/QSlim/blob/master/report/report.pdf) which summarizes the whole work.
-
-![output_1](https://github.com/Zielon/QSlim/blob/master/report/simply_9.gif)
-
+Here you can read the [report](https://github.com/Zielon/QSlim/blob/master/report/report.pdf) which summarizes the whole work.  
 Default reader accepts as an input mesh only those with binary encoding.
 
 ```
